@@ -23,15 +23,15 @@ class RutaResource extends Resource
     protected static ?string $model = Ruta::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-map';
-    
+
     protected static ?string $navigationLabel = 'Rutas';
-    
+
     protected static ?string $modelLabel = 'Ruta';
-    
+
     protected static ?string $pluralModelLabel = 'Rutas';
-    
+
     protected static ?int $navigationSort = 3;
-    
+
     protected static ?string $navigationGroup = 'Operaciones';
 
     public static function form(Form $form): Form
@@ -56,7 +56,7 @@ class RutaResource extends Resource
                                     ->suffixIcon('heroicon-m-flag'),
                             ]),
                     ]),
-                
+
                 Forms\Components\Section::make('Detalles de la Ruta')
                     ->schema([
                         Forms\Components\Grid::make(2)
@@ -81,14 +81,14 @@ class RutaResource extends Resource
                                     ->placeholder('0.0')
                                     ->helperText('Tiempo estimado de viaje en horas'),
                             ]),
-                        
+
                         Forms\Components\Textarea::make('descripcion')
                             ->label('Descripción')
                             ->placeholder('Descripción opcional de la ruta, puntos de interés, etc.')
                             ->rows(3)
                             ->maxLength(1000)
                             ->columnSpanFull(),
-                        
+
                         Forms\Components\Select::make('estado')
                             ->label('Estado de la Ruta')
                             ->required()
@@ -114,19 +114,19 @@ class RutaResource extends Resource
                     ->weight(FontWeight::Bold)
                     ->copyable()
                     ->copyMessage('Ruta copiada'),
-                
+
                 Tables\Columns\TextColumn::make('distancia_formateada')
                     ->label('Distancia')
                     ->alignEnd()
                     ->sortable('distancia_km')
                     ->color('info'),
-                
+
                 Tables\Columns\TextColumn::make('tiempo_estimado_formato')
                     ->label('Tiempo Est.')
                     ->alignCenter()
                     ->sortable('tiempo_estimado_horas')
                     ->tooltip('Tiempo estimado de viaje'),
-                
+
                 Tables\Columns\TextColumn::make('velocidad_promedio')
                     ->label('Velocidad Prom.')
                     ->alignEnd()
@@ -138,7 +138,7 @@ class RutaResource extends Resource
                         default => 'danger',
                     })
                     ->tooltip('Velocidad promedio calculada'),
-                
+
                 Tables\Columns\TextColumn::make('dificultad')
                     ->label('Dificultad')
                     ->badge()
@@ -149,20 +149,20 @@ class RutaResource extends Resource
                         'Muy Difícil' => 'danger',
                         default => 'gray',
                     }),
-                
+
                 Tables\Columns\TextColumn::make('total_viajes_completados')
                     ->label('Viajes')
                     ->alignCenter()
                     ->sortable()
                     ->tooltip('Total de viajes completados en esta ruta'),
-                
+
                 Tables\Columns\TextColumn::make('tiempo_promedio_real')
                     ->label('Tiempo Real Prom.')
                     ->alignCenter()
                     ->formatStateUsing(fn (?float $state): string => $state ? number_format($state, 1) . 'h' : 'N/D')
                     ->tooltip('Tiempo promedio real de viajes completados')
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('eficiencia_ruta')
                     ->label('Eficiencia')
                     ->alignEnd()
@@ -175,7 +175,7 @@ class RutaResource extends Resource
                     })
                     ->tooltip('Eficiencia: tiempo estimado vs real')
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('estado')
                     ->label('Estado')
                     ->badge()
@@ -184,7 +184,7 @@ class RutaResource extends Resource
                         'Inactiva' => 'danger',
                         default => 'gray',
                     }),
-                
+
                 Tables\Columns\IconColumn::make('tiene_ruta_inversa')
                     ->label('Ida/Vuelta')
                     ->boolean()
@@ -193,7 +193,7 @@ class RutaResource extends Resource
                     ->trueColor('success')
                     ->falseColor('gray')
                     ->tooltip(fn (Ruta $record) => $record->tiene_ruta_inversa ? 'Tiene ruta de regreso' : 'Solo ida'),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Creada')
                     ->dateTime('d/m/Y')
@@ -208,7 +208,7 @@ class RutaResource extends Resource
                         Ruta::ESTADO_INACTIVA => 'Inactiva',
                     ])
                     ->placeholder('Todos los estados'),
-                
+
                 SelectFilter::make('dificultad')
                     ->label('Dificultad')
                     ->options([
@@ -218,15 +218,15 @@ class RutaResource extends Resource
                         'Muy Difícil' => 'Muy Difícil',
                     ])
                     ->placeholder('Todas las dificultades'),
-                
+
                 Filter::make('rutas_largas')
                     ->label('Rutas Largas (+200 km)')
                     ->query(fn (Builder $query): Builder => $query->where('distancia_km', '>', 200))
                     ->toggle(),
-                
+
                 Filter::make('con_ruta_inversa')
                     ->label('Con Ruta de Regreso')
-                    ->query(fn (Builder $query): Builder => 
+                    ->query(fn (Builder $query): Builder =>
                         $query->whereExists(function ($query) {
                             $query->from('rutas as r2')
                                   ->whereColumn('r2.origen', 'rutas.destino')
@@ -235,10 +235,10 @@ class RutaResource extends Resource
                         })
                     )
                     ->toggle(),
-                
+
                 SelectFilter::make('origen')
                     ->label('Origen')
-                    ->options(fn (): array => 
+                    ->options(fn (): array =>
                         Ruta::query()
                             ->distinct()
                             ->pluck('origen', 'origen')
@@ -246,10 +246,10 @@ class RutaResource extends Resource
                     )
                     ->searchable()
                     ->placeholder('Todas las ciudades'),
-                
+
                 SelectFilter::make('destino')
                     ->label('Destino')
-                    ->options(fn (): array => 
+                    ->options(fn (): array =>
                         Ruta::query()
                             ->distinct()
                             ->pluck('destino', 'destino')
@@ -262,17 +262,17 @@ class RutaResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make()
                         ->icon('heroicon-o-eye'),
-                    
+
                     Tables\Actions\EditAction::make()
                         ->icon('heroicon-o-pencil'),
-                    
+
                     Tables\Actions\Action::make('programar_viaje')
                         ->label('Programar Viaje')
                         ->icon('heroicon-o-plus')
                         ->color('success')
                         ->visible(fn (Ruta $record) => $record->estado === Ruta::ESTADO_ACTIVA)
                         ->url(fn (Ruta $record): string => ViajeResource::getUrl('create', ['ruta_id' => $record->id])),
-                    
+
                     Tables\Actions\Action::make('crear_ruta_inversa')
                         ->label('Crear Ruta de Regreso')
                         ->icon('heroicon-o-arrow-path')
@@ -290,13 +290,13 @@ class RutaResource extends Resource
                                 'descripcion' => "Ruta de regreso de {$record->destino} a {$record->origen}",
                                 'estado' => Ruta::ESTADO_ACTIVA,
                             ]);
-                            
+
                             Notification::make()
                                 ->title('Ruta de regreso creada')
                                 ->success()
                                 ->send();
                         }),
-                    
+
                     Tables\Actions\Action::make('ver_estadisticas')
                         ->label('Estadísticas')
                         ->icon('heroicon-o-chart-bar')
@@ -330,14 +330,14 @@ class RutaResource extends Resource
                             $records->each(function (Ruta $record) use ($data) {
                                 $record->update(['estado' => $data['estado']]);
                             });
-                            
+
                             Notification::make()
                                 ->title('Estados actualizados')
                                 ->body("Se actualizaron {$records->count()} rutas")
                                 ->success()
                                 ->send();
                         }),
-                    
+
                     Tables\Actions\DeleteBulkAction::make()
                         ->requiresConfirmation(),
                 ]),
@@ -355,22 +355,22 @@ class RutaResource extends Resource
             // Will be added after creating the relation managers
         ];
     }
-    
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::where('estado', Ruta::ESTADO_ACTIVA)->count();
     }
-    
+
     public static function getNavigationBadgeColor(): ?string
     {
         $activas = static::getModel()::where('estado', Ruta::ESTADO_ACTIVA)->count();
-        
+
         if ($activas > 20) {
             return 'success';
         } elseif ($activas > 10) {
             return 'warning';
         }
-        
+
         return 'danger';
     }
 
