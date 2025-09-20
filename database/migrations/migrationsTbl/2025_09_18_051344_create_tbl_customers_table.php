@@ -12,16 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tbl_customers', function (Blueprint $table) {
-            $table->integer('id_customer', true);
+            $table->id();
             $table->string('name', 150);
             $table->string('nit', 20)->nullable();
             $table->string('phone', 20)->nullable();
             $table->string('email', 100)->nullable();
             $table->text('address')->nullable();
-            $table->integer('id_municipality')->nullable()->index('fk__tbl_custo__id_mu__5165187f');
+            $table->foreignId('id_municipality')->constrained('tbl_municipalities');
             $table->boolean('status')->nullable()->default(true);
-            $table->dateTime('created_at')->nullable()->useCurrent();
-            $table->dateTime('updated_at')->nullable();
+            $table->timestamps();
         });
     }
 

@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('mantemientos', function (Blueprint $table) {
-            $table->foreign(['camion_id'])->references(['id'])->on('camiones')->onUpdate('no action')->onDelete('cascade');
+        Schema::create('tbl_alert_statuses', function (Blueprint $table) {
+            $table->id();
+            $table->string('name_alert', 50)->unique();
+            $table->text('description')->nullable();
+            $table->decimal('threshold_km', 10);
+            $table->timestamps();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('mantemientos', function (Blueprint $table) {
-            $table->dropForeign('mantemientos_camion_id_foreign');
-        });
+        Schema::dropIfExists('tbl_alert_statuses');
     }
 };

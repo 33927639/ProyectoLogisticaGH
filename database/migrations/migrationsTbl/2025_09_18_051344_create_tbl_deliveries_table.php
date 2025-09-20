@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_incomes', function (Blueprint $table) {
-            $table->integer('id_income', true);
-            $table->decimal('amount', 10)->nullable();
-            $table->text('description');
-            $table->date('income_date')->default('now()');
-            $table->integer('id_user')->index('fk__tbl_incom__id_us__1db06a4f');
-            $table->integer('id_delivery')->nullable()->index('fk__tbl_incom__id_de__1ea48e88');
+        Schema::create('tbl_deliveries', function (Blueprint $table) {
+            $table->id();
+            $table->date('delivery_date');
+            $table->string('delivery_status', 50);
+            $table->integer('id_route')->index('fk__tbl_deliv__id_ro__6ef57b66');
+            $table->integer('id_status')->default(1)->index('fk__tbl_deliv__id_st__6fe99f9f');
             $table->boolean('status')->nullable()->default(true);
             $table->dateTime('created_at')->nullable()->useCurrent();
             $table->dateTime('updated_at')->nullable();
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_incomes');
+        Schema::dropIfExists('tbl_deliveries');
     }
 };
