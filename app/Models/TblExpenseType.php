@@ -12,13 +12,13 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TblExpenseType
- * 
+ *
  * @property int $id_expense_type
  * @property string $name
  * @property bool|null $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|TblExpense[] $tbl_expenses
  *
  * @package App\Models
@@ -37,7 +37,7 @@ class TblExpenseType extends Model
 		'status'
 	];
 
-	public function tbl_expenses()
+	public function expense()
 	{
 		return $this->hasMany(TblExpense::class, 'id_expense_type');
 	}
