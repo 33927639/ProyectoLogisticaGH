@@ -12,14 +12,14 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TblDeliveryStatus
- * 
+ *
  * @property int $id_status
  * @property string $name_status
  * @property string|null $description
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property bool|null $status
- * 
+ *
  * @property Collection|TblDelivery[] $tbl_deliveries
  *
  * @package App\Models
@@ -39,7 +39,7 @@ class TblDeliveryStatus extends Model
 		'status'
 	];
 
-	public function tbl_deliveries()
+	public function deliverie()
 	{
 		return $this->hasMany(TblDelivery::class, 'id_status');
 	}

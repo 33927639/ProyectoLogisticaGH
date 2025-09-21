@@ -23,7 +23,7 @@ class TblCustomerResource extends Resource
 
     protected static ?string $modelLabel = '';
 
-    protected static ?string $pluralModelLabel = 'Rutas';
+    protected static ?string $pluralModelLabel = 'Crear Clientes';
 
     protected static ?int $navigationSort = 1;
 
@@ -33,22 +33,31 @@ class TblCustomerResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('name')->label('Nombre Cliente')
                     ->required()
                     ->maxLength(150),
-                Forms\Components\TextInput::make('nit')
+                Forms\Components\TextInput::make('nit')->label('NIT')
                     ->maxLength(20),
-                Forms\Components\TextInput::make('phone')
+                Forms\Components\TextInput::make('phone')->label('No. Teléfono')
                     ->tel()
                     ->maxLength(20),
-                Forms\Components\TextInput::make('email')
+                Forms\Components\TextInput::make('email')->label('Correo Electrónico')
                     ->email()
                     ->maxLength(100),
-                Forms\Components\Textarea::make('address')
+                Forms\Components\Textarea::make('address')->label('Dirección')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('id_municipality')
-                    ->numeric(),
-                Forms\Components\Toggle::make('status'),
+                Forms\Components\Select::make('id_municipality')
+                    ->label('Municipio')
+                    ->relationship('municipality', 'name_municipality') // 👈 aquí usa name_municipality
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Forms\Components\Toggle::make('status')->label('Estado')
+                    ->default(true)
+                    ->inline(false)
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->onIcon('heroicon-s-check'),
             ]);
     }
 
@@ -56,18 +65,18 @@ class TblCustomerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('name')->label('Nombre Cliente')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('nit')
+                Tables\Columns\TextColumn::make('nit')->label('NIT')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
+                Tables\Columns\TextColumn::make('phone')->label('No. Teléfono')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
+                Tables\Columns\TextColumn::make('email')->label('Correo Electrónico')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('id_municipality')
+                Tables\Columns\TextColumn::make('municipality.name_municipality')->label('Municipio')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('status')
+                Tables\Columns\IconColumn::make('status')->label('Estado')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -82,7 +91,11 @@ class TblCustomerResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->label('Editar'),
+                Tables\Actions\ViewAction::make()
+                ->label('Ver'),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
