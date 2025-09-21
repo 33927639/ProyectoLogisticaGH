@@ -23,15 +23,15 @@ class PilotoResource extends Resource
     protected static ?string $model = Piloto::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
-    
+
     protected static ?string $navigationLabel = 'Pilotos';
-    
+
     protected static ?string $modelLabel = 'Piloto';
-    
+
     protected static ?string $pluralModelLabel = 'Pilotos';
-    
+
     protected static ?int $navigationSort = 2;
-    
+
     protected static ?string $navigationGroup = 'Gestión de Personal';
 
     public static function form(Form $form): Form
@@ -62,7 +62,7 @@ class PilotoResource extends Resource
                             ->placeholder('Ej: C-1234567')
                             ->suffixIcon('heroicon-m-credit-card'),
                     ]),
-                
+
                 Forms\Components\Section::make('Información de Contacto')
                     ->schema([
                         Forms\Components\Grid::make(2)
@@ -82,7 +82,7 @@ class PilotoResource extends Resource
                                     ->suffixIcon('heroicon-m-envelope'),
                             ]),
                     ]),
-                
+
                 Forms\Components\Section::make('Estado')
                     ->schema([
                         Forms\Components\Select::make('estado')
@@ -110,27 +110,27 @@ class PilotoResource extends Resource
                     ->badge()
                     ->color('primary')
                     ->size('sm'),
-                
+
                 Tables\Columns\TextColumn::make('nombre_completo')
                     ->label('Nombre Completo')
                     ->searchable(['nombre', 'apellido'])
                     ->sortable(['nombre'])
                     ->weight(FontWeight::Bold)
                     ->description(fn (Piloto $record): string => $record->telefono_formateado),
-                
+
                 Tables\Columns\TextColumn::make('licencia')
                     ->label('Licencia')
                     ->searchable()
                     ->copyable()
                     ->copyMessage('Licencia copiada')
                     ->fontFamily('mono'),
-                
+
                 Tables\Columns\TextColumn::make('email')
                     ->label('Email')
                     ->searchable()
                     ->toggleable()
                     ->limit(30),
-                
+
                 Tables\Columns\TextColumn::make('nivel_experiencia')
                     ->label('Experiencia')
                     ->badge()
@@ -142,20 +142,20 @@ class PilotoResource extends Resource
                         'Experto' => 'danger',
                         default => 'gray',
                     }),
-                
+
                 Tables\Columns\TextColumn::make('total_viajes_completados')
                     ->label('Viajes')
                     ->alignCenter()
                     ->sortable()
                     ->tooltip('Total de viajes completados'),
-                
+
                 Tables\Columns\TextColumn::make('total_kilometros_recorridos')
                     ->label('Km Recorridos')
                     ->numeric(decimalPlaces: 0)
                     ->suffix(' km')
                     ->alignEnd()
                     ->toggleable(),
-                
+
                 Tables\Columns\TextColumn::make('estado')
                     ->label('Estado')
                     ->badge()
@@ -165,7 +165,7 @@ class PilotoResource extends Resource
                         'Suspendido' => 'warning',
                         default => 'gray',
                     }),
-                
+
                 Tables\Columns\IconColumn::make('esta_disponible')
                     ->label('Disponible')
                     ->boolean()
@@ -174,7 +174,7 @@ class PilotoResource extends Resource
                     ->trueColor('success')
                     ->falseColor('danger')
                     ->tooltip(fn (Piloto $record) => $record->esta_disponible ? 'Disponible para viajes' : 'No disponible'),
-                
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Registrado')
                     ->dateTime('d/m/Y')
@@ -190,17 +190,17 @@ class PilotoResource extends Resource
                         Piloto::ESTADO_SUSPENDIDO => 'Suspendido',
                     ])
                     ->placeholder('Todos los estados'),
-                
+
                 Filter::make('disponibles')
                     ->label('Disponibles')
-                    ->query(fn (Builder $query): Builder => 
+                    ->query(fn (Builder $query): Builder =>
                         $query->where('estado', Piloto::ESTADO_ACTIVO)
-                              ->whereDoesntHave('viajes', fn (Builder $query) => 
+                              ->whereDoesntHave('viajes', fn (Builder $query) =>
                                   $query->where('estado', 'En Curso')
                               )
                     )
                     ->toggle(),
-                
+
                 SelectFilter::make('nivel_experiencia')
                     ->label('Nivel de Experiencia')
                     ->options([
@@ -211,7 +211,7 @@ class PilotoResource extends Resource
                         'Experto' => 'Experto',
                     ])
                     ->placeholder('Todos los niveles'),
-                
+
                 Filter::make('con_email')
                     ->label('Con Email Registrado')
                     ->query(fn (Builder $query): Builder => $query->whereNotNull('email'))
@@ -221,17 +221,17 @@ class PilotoResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make()
                         ->icon('heroicon-o-eye'),
-                    
+
                     Tables\Actions\EditAction::make()
                         ->icon('heroicon-o-pencil'),
-                    
+
                     Tables\Actions\Action::make('asignar_viaje')
                         ->label('Asignar Viaje')
                         ->icon('heroicon-o-truck')
                         ->color('success')
                         ->visible(fn (Piloto $record) => $record->esta_disponible)
                         ->url(fn (Piloto $record): string => ViajeResource::getUrl('create', ['piloto_id' => $record->id])),
-                    
+
                     Tables\Actions\Action::make('cambiar_estado')
                         ->label('Cambiar Estado')
                         ->icon('heroicon-o-arrow-path')
@@ -253,7 +253,7 @@ class PilotoResource extends Resource
                         ])
                         ->action(function (Piloto $record, array $data): void {
                             $record->update(['estado' => $data['estado']]);
-                            
+
                             Notification::make()
                                 ->title('Estado actualizado')
                                 ->body("Piloto {$record->nombre_completo} ahora está {$data['estado']}")
@@ -287,14 +287,14 @@ class PilotoResource extends Resource
                             $records->each(function (Piloto $record) use ($data) {
                                 $record->update(['estado' => $data['estado']]);
                             });
-                            
+
                             Notification::make()
                                 ->title('Estados actualizados')
                                 ->body("Se actualizaron {$records->count()} pilotos")
                                 ->success()
                                 ->send();
                         }),
-                    
+
                     Tables\Actions\DeleteBulkAction::make()
                         ->requiresConfirmation(),
                 ]),
@@ -312,25 +312,25 @@ class PilotoResource extends Resource
             // Will be added after creating the relation managers
         ];
     }
-    
+
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
     }
-    
+
     public static function getNavigationBadgeColor(): ?string
     {
         $disponibles = static::getModel()::where('estado', Piloto::ESTADO_ACTIVO)
-            ->whereDoesntHave('viajes', fn (Builder $query) => 
+            ->whereDoesntHave('viajes', fn (Builder $query) =>
                 $query->where('estado', 'En Curso')
             )->count();
-        
+
         if ($disponibles > 10) {
             return 'success';
         } elseif ($disponibles > 5) {
             return 'warning';
         }
-        
+
         return 'danger';
     }
 
