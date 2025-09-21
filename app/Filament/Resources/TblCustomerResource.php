@@ -19,7 +19,7 @@ class TblCustomerResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationLabel = 'Clientes';
+    protected static ?string $navigationLabel = 'Requerimientos de mantenimiento';
 
     protected static ?string $modelLabel = '';
 
