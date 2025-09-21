@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TblIncome
- * 
+ *
  * @property int $id_income
  * @property float|null $amount
  * @property string $description
@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool|null $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property TblDelivery|null $tbl_delivery
  * @property TblUser $tbl_user
  *

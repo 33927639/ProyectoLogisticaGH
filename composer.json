@@ -6,12 +6,11 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
-        "filament/filament": "^3.3",
-        "laravel/framework": "^11.0",
-        "laravel/tinker": "^2.19.1"
+        "php": "^8.3",
+        "filament/filament": "^3.2",
+        "laravel/framework": "^12.0",
+        "laravel/tinker": "^2.10.1"
     },
-
     "require-dev": {
         "fakerphp/faker": "^1.23",
         "kitloong/laravel-migrations-generator": "^7.2",

@@ -11,12 +11,12 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TblDeliveryAssignment
- * 
+ *
  * @property int $id_delivery
  * @property int $id_vehicle
  * @property int $id_driver
  * @property Carbon $assignment_date
- * 
+ *
  * @property TblDelivery $tbl_delivery
  * @property TblDriver $tbl_driver
  * @property TblVehicle $tbl_vehicle
@@ -40,17 +40,17 @@ class TblDeliveryAssignment extends Model
 		'assignment_date'
 	];
 
-	public function tbl_delivery()
+	public function delivery()
 	{
 		return $this->belongsTo(TblDelivery::class, 'id_delivery');
 	}
 
-	public function tbl_driver()
+	public function driversD()
 	{
 		return $this->belongsTo(TblDriver::class, 'id_driver');
 	}
 
-	public function tbl_vehicle()
+	public function vehicle()
 	{
 		return $this->belongsTo(TblVehicle::class, 'id_vehicle');
 	}

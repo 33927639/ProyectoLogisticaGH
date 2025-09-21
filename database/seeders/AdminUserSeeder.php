@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
@@ -14,7 +13,6 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create admin user for logistics system
         User::create([
             'name' => 'Administrador',
             'email' => 'admin@logistics.com',
@@ -23,3 +21,4 @@ class AdminUserSeeder extends Seeder
         ]);
     }
 }
+
