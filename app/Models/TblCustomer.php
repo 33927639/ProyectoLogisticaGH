@@ -8,10 +8,11 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class TblCustomer
- * 
+ *
  * @property int $id_customer
  * @property string $name
  * @property string|null $nit
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool|null $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property TblMunicipality|null $tbl_municipality
  *
  * @package App\Models
@@ -47,7 +48,7 @@ class TblCustomer extends Model
 		'status'
 	];
 
-	public function tbl_municipality()
+	public function municipality()
 	{
 		return $this->belongsTo(TblMunicipality::class, 'id_municipality');
 	}
