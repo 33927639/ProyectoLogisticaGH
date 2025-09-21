@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TblCustomerResource\Pages;
-use App\Filament\Resources\TblCustomerResource\RelationManagers;
-use App\Models\TblCustomer;
+use App\Filament\Resources\TblMaintenanceRequestResource\Pages;
+use App\Filament\Resources\TblMaintenanceRequestResource\RelationManagers;
+use App\Models\TblMaintenanceRequest;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class TblCustomerResource extends Resource
+class TblMaintenanceRequestResource extends Resource
 {
-    protected static ?string $model = TblCustomer::class;
+    protected static ?string $model = TblMaintenanceRequest::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -29,24 +29,20 @@ class TblCustomerResource extends Resource
 
     protected static ?string $navigationGroup = 'Clientes';
 
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('id_vehicle')
                     ->required()
-                    ->maxLength(150),
-                Forms\Components\TextInput::make('nit')
-                    ->maxLength(20),
-                Forms\Components\TextInput::make('phone')
-                    ->tel()
-                    ->maxLength(20),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->maxLength(100),
-                Forms\Components\Textarea::make('address')
+                    ->numeric(),
+                Forms\Components\DatePicker::make('request_date')
+                    ->required(),
+                Forms\Components\Textarea::make('reason')
+                    ->required()
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('id_municipality')
+                Forms\Components\TextInput::make('approved_by')
                     ->numeric(),
                 Forms\Components\Toggle::make('status'),
             ]);
@@ -56,15 +52,13 @@ class TblCustomerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('nit')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('phone')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('id_municipality')
+                Tables\Columns\TextColumn::make('id_vehicle')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('request_date')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('approved_by')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('status')
@@ -101,9 +95,9 @@ class TblCustomerResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTblCustomers::route('/'),
-            'create' => Pages\CreateTblCustomer::route('/create'),
-            'edit' => Pages\EditTblCustomer::route('/{record}/edit'),
+            'index' => Pages\ListTblMaintenanceRequests::route('/'),
+            'create' => Pages\CreateTblMaintenanceRequest::route('/create'),
+            'edit' => Pages\EditTblMaintenanceRequest::route('/{record}/edit'),
         ];
     }
 }
