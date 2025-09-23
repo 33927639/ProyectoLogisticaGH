@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TblMaintenanceResource extends Resource
 {
-    protected static ?string $model = Mantenimientos::class;
+    protected static ?string $model = TblMaintenance::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
