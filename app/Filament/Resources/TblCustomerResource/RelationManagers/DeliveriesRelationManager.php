@@ -1,37 +1,26 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\TblCustomerResource\RelationManagers;
 
-use App\Filament\Resources\TblDeliveryResource\Pages;
-use App\Filament\Resources\TblDeliveryResource\RelationManagers;
-use App\Models\TblDelivery;
-use App\Models\TblRoute;
-use App\Models\TblCustomer;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Models\TblRoute;
 
-class TblDeliveryResource extends Resource
+class DeliveriesRelationManager extends RelationManager
 {
-    protected static ?string $model = TblDelivery::class;
+    protected static string $relationship = 'deliveries';
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $title = 'Entregas del Cliente';
 
-    protected static ?string $navigationLabel = 'Entregas';
+    protected static ?string $label = 'Entrega';
+    
+    protected static ?string $pluralLabel = 'Entregas';
 
-    protected static ?string $modelLabel = '';
-
-    protected static ?string $pluralModelLabel = 'Lista de Entregas';
-
-    protected static ?int $navigationSort = 1;
-
-    protected static ?string $navigationGroup = 'Clientes';
-
-    public static function form(Form $form): Form
+    public function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -56,24 +45,19 @@ class TblDeliveryResource extends Resource
                     ->required()
                     ->searchable(),
                     
-                Forms\Components\Select::make('id_customer')
-                    ->label('Cliente')
-                    ->options(TblCustomer::all()->pluck('name', 'id_customer'))
-                    ->searchable()
-                    ->required(),
-                    
                 Forms\Components\Toggle::make('status')
                     ->label('Activo')
                     ->default(true),
             ]);
     }
 
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
+            ->recordTitleAttribute('delivery_date')
             ->columns([
                 Tables\Columns\TextColumn::make('delivery_date')
-                    ->label('Fecha de Entrega')
+                    ->label('Fecha')
                     ->date('d/m/Y')
                     ->sortable(),
                     
@@ -91,53 +75,59 @@ class TblDeliveryResource extends Resource
                     ->suffix(' km')
                     ->sortable(),
                     
-                Tables\Columns\TextColumn::make('tbl_customer.name')
-                    ->label('Cliente')
-                    ->searchable()
-                    ->sortable(),
-                    
                 Tables\Columns\IconColumn::make('status')
                     ->label('Activo')
                     ->boolean(),
                     
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Creado')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                    
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Actualizado')
+                    ->label('Registrado')
                     ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('active')
+                    ->label('Solo Activos')
+                    ->query(fn (Builder $query): Builder => $query->where('status', true))
+                    ->default(),
+                    
+                Tables\Filters\Filter::make('this_month')
+                    ->label('Este Mes')
+                    ->query(fn (Builder $query): Builder => $query->whereMonth('delivery_date', now()->month))
+                    ->toggle(),
+            ])
+            ->filtersLayout(Tables\Enums\FiltersLayout::AboveContent)
+            ->headerActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('Nueva Entrega')
+                    ->icon('heroicon-o-plus')
+                    ->mutateFormDataUsing(function (array $data): array {
+                        $data['id_customer'] = request()->route('record');
+                        return $data;
+                    }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->icon('heroicon-o-eye'),
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil'),
+                Tables\Actions\DeleteAction::make()
+                    ->icon('heroicon-o-trash'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ])
+            ->defaultSort('delivery_date', 'desc')
+            ->emptyStateActions([
+                Tables\Actions\CreateAction::make()
+                    ->label('Crear Primera Entrega')
+                    ->icon('heroicon-o-plus')
+                    ->mutateFormDataUsing(function (array $data): array {
+                        $data['id_customer'] = request()->route('record');
+                        return $data;
+                    }),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListTblDeliveries::route('/'),
-            'create' => Pages\CreateTblDelivery::route('/create'),
-            'edit' => Pages\EditTblDelivery::route('/{record}/edit'),
-        ];
     }
 }

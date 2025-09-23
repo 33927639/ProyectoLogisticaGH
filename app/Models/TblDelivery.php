@@ -39,15 +39,14 @@ class TblDelivery extends Model
 	protected $casts = [
 		'delivery_date' => 'datetime',
 		'id_route' => 'int',
-		'id_status' => 'int',
+		'id_customer' => 'int',
 		'status' => 'bool'
 	];
 
 	protected $fillable = [
 		'delivery_date',
-		'delivery_status',
 		'id_route',
-		'id_status',
+		'id_customer',
 		'status'
 	];
 
@@ -56,9 +55,9 @@ class TblDelivery extends Model
 		return $this->belongsTo(TblRoute::class, 'id_route');
 	}
 
-	public function tbl_delivery_status()
+	public function tbl_customer()
 	{
-		return $this->belongsTo(TblDeliveryStatus::class, 'id_status');
+		return $this->belongsTo(TblCustomer::class, 'id_customer');
 	}
 
 	public function tbl_delivery_assignments()

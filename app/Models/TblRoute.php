@@ -45,9 +45,14 @@ class TblRoute extends Model
 		'status'
 	];
 
-	public function tbl_municipality()
+	public function origin_municipality()
 	{
 		return $this->belongsTo(TblMunicipality::class, 'id_origin');
+	}
+
+	public function destination_municipality()
+	{
+		return $this->belongsTo(TblMunicipality::class, 'id_destination');
 	}
 
 	public function tbl_deliveries()

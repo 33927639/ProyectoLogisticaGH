@@ -12,14 +12,14 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TblAlertStatus
- * 
+ *
  * @property int $id_alert
  * @property string $name_alert
  * @property string|null $description
  * @property float $threshold_km
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|TblKilometer[] $tbl_kilometers
  *
  * @package App\Models

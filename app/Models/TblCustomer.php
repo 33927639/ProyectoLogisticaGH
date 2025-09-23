@@ -52,4 +52,14 @@ class TblCustomer extends Model
 	{
 		return $this->belongsTo(TblMunicipality::class, 'id_municipality');
 	}
+
+    public function income()
+    {
+        return $this->hasMany(TblIncome::class, 'id_customer');
+    }
+
+    public function deliveries()
+    {
+        return $this->hasMany(TblDelivery::class, 'id_customer');
+    }
 }

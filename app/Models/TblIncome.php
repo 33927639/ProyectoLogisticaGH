@@ -16,14 +16,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property float|null $amount
  * @property string $description
  * @property Carbon $income_date
- * @property int $id_user
+ * @property int $id_customer
  * @property int|null $id_delivery
  * @property bool|null $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
  * @property TblDelivery|null $tbl_delivery
- * @property TblUser $tbl_user
+ * @property TblCustomer $tbl_customer
  *
  * @package App\Models
  */
@@ -35,7 +35,7 @@ class TblIncome extends Model
 	protected $casts = [
 		'amount' => 'float',
 		'income_date' => 'datetime',
-		'id_user' => 'int',
+		'id_customer' => 'int',
 		'id_delivery' => 'int',
 		'status' => 'bool'
 	];
@@ -44,7 +44,7 @@ class TblIncome extends Model
 		'amount',
 		'description',
 		'income_date',
-		'id_user',
+		'id_customer',
 		'id_delivery',
 		'status'
 	];
@@ -54,8 +54,13 @@ class TblIncome extends Model
 		return $this->belongsTo(TblDelivery::class, 'id_delivery');
 	}
 
-	public function tbl_user()
+	public function tbl_customer()
 	{
-		return $this->belongsTo(TblUser::class, 'id_user');
+		return $this->belongsTo(TblCustomer::class, 'id_customer');
 	}
+
+    public function customer()
+    {
+        return $this->belongsTo(TblCustomer::class, 'id_customer');
+    }
 }

@@ -5,7 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Camion;
 use App\Models\Piloto;
 use App\Models\Viaje;
-use App\Models\Mantenimiento;
+use App\Models\TblMaintenance;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Carbon\Carbon;
@@ -20,8 +20,8 @@ class LogisticsOverviewWidget extends BaseWidget
         $camionesEnTaller = Camion::where('estado', Camion::ESTADO_EN_TALLER)->count();
         $camionesNecesitanMantenimiento = Camion::whereRaw('kilometraje_actual >= (
             SELECT COALESCE(MAX(kilometraje_actual), 0) + intervalo_mantenimiento_km
-            FROM mantemientos 
-            WHERE camiones.id = mantemientos.camion_id 
+            FROM mantemientos
+            WHERE camiones.id = mantemientos.camion_id
             AND estado = "Completado"
         )')->count();
 
@@ -43,7 +43,7 @@ class LogisticsOverviewWidget extends BaseWidget
         $mantenimientosVencidos = Mantenimiento::where('estado', Mantenimiento::ESTADO_PROGRAMADO)
             ->where('fecha_programada', '<', Carbon::today())
             ->count();
-        
+
         $mantenimientosProximos = Mantenimiento::where('estado', Mantenimiento::ESTADO_PROGRAMADO)
             ->whereBetween('fecha_programada', [
                 Carbon::today(),
