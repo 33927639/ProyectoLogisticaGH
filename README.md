@@ -127,6 +127,57 @@ php artisan db:seed
 
 ---
 
+### Procedmientos almacenados
+Creee los procedimientos almacenados desde DataGrip, hacerlo para que funcione mis cambios
+
+Procedimiento almacenado insertart
+```sql
+DELIMITER $$
+
+CREATE PROCEDURE sp_products_insert(
+    IN p_name VARCHAR(150),
+    IN p_stock INT,
+    IN p_price DECIMAL(10,2),
+    IN p_status TINYINT,
+    IN p_descripcion TEXT
+)
+BEGIN
+    INSERT INTO tbl_products (name, stock, price, status, descripcion, created_at, updated_at)
+    VALUES (p_name, p_stock, p_price, p_status, p_descripcion, NOW(), NOW());
+
+    SELECT LAST_INSERT_ID() AS id;
+END$$
+
+DELIMITER ;
+```
+Procedmiento almacenado actualizar
+```sql
+DELIMITER $$
+
+CREATE PROCEDURE sp_products_update(
+    IN p_id INT,
+    IN p_name VARCHAR(150),
+    IN p_stock INT,
+    IN p_price DECIMAL(10,2),
+    IN p_status TINYINT,
+    IN p_descripcion TEXT
+)
+BEGIN
+    UPDATE tbl_products
+    SET name = p_name,
+        stock = p_stock,
+        price = p_price,
+        status = p_status,
+        descripcion = p_descripcion,
+        updated_at = NOW()
+    WHERE id = p_id;
+END$$
+
+DELIMITER ;
+```
+
+---
+
 ## 🧠 Apoyo con IA (ChatGPT)
 
 Durante el desarrollo de esta funcionalidad, me apoyé en ChatGPT para resolver diversos problemas y optimizar el proceso. Para guiar la solución, compartí la información más relevante de mi proyecto, incluyendo las tecnologías que utilizamos como Laravel y Filament.
