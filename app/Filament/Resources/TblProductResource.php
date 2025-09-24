@@ -73,7 +73,14 @@ class TblProductResource extends Resource
             Tables\Actions\ViewAction::make()
                 ->label('Ver'),
             Tables\Actions\DeleteAction::make()
-                ->label('Eliminar'),
+                ->label('Eliminar')
+                ->requiresConfirmation() // Esto activa el modal de confirmación
+                ->modalHeading('Eliminar producto') // Título del modal
+                ->modalDescription('¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.') // Descripción del mensaje
+                ->modalSubmitActionLabel('Sí, eliminar') // Texto del botón de confirmación
+                ->modalCancelActionLabel('Cancelar'), // Texto del botón de cancelación
+
+
         ]);
     }
 

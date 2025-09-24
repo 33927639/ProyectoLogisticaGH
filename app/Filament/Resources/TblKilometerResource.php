@@ -21,7 +21,7 @@ class TblKilometerResource extends Resource
 
     protected static ?string $navigationLabel = 'Kilometros';
 
-    protected static ?string $modelLabel = 'asdfasdfasd';
+    protected static ?string $modelLabel = '';
 
     protected static ?string $pluralModelLabel = 'Kilometros';
 
