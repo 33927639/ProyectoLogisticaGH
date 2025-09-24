@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TblCustomersResource\Pages;
-use App\Models\TblCustomer; // <- usa tu modelo singular
+use App\Models\TblCustomer; // <- tu modelo
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class TblCustomersResource extends Resource
 {
-    protected static ?string $model = TblCustomer::class; // <- y aquí también
+    protected static ?string $model = TblCustomer::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -83,13 +83,14 @@ class TblCustomersResource extends Resource
                     ->badge()
                     ->color('primary'),
 
-                // si tu modelo tiene los accessors name_with_nit y short_address, se usan aquí
                 Tables\Columns\TextColumn::make('name_with_nit')
                     ->label('Nombre · NIT')
                     ->searchable(['name', 'nit'])
                     ->sortable(['name'])
                     ->weight(FontWeight::Bold)
-                    ->description(fn ($r): ?string => $r->phone ? "Tel: {$r->phone}" : null),
+                    ->description(fn (TblCustomer $record): ?string =>
+                    $record->phone ? "Tel: {$record->phone}" : null
+                    ),
 
                 Tables\Columns\TextColumn::make('email')
                     ->label('Email')
@@ -124,7 +125,9 @@ class TblCustomersResource extends Resource
 
                 Filter::make('con_email')
                     ->label('Con email')
-                    ->query(fn (Builder $q): Builder => $q->whereNotNull('email')->where('email', '!=', ''))
+                    ->query(fn (Builder $q): Builder =>
+                    $q->whereNotNull('email')->where('email', '!=', '')
+                    )
                     ->toggle(),
             ])
             ->actions([
@@ -136,11 +139,15 @@ class TblCustomersResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('activar')
                         ->label('Marcar como Activos')
-                        ->action(fn (Collection $records) => $records->each->update(['status' => true])),
+                        ->action(fn (Collection $records) =>
+                        $records->each->update(['status' => true])
+                        ),
 
                     Tables\Actions\BulkAction::make('inactivar')
                         ->label('Marcar como Inactivos')
-                        ->action(fn (Collection $records) => $records->each->update(['status' => false])),
+                        ->action(fn (Collection $records) =>
+                        $records->each->update(['status' => false])
+                        ),
 
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
