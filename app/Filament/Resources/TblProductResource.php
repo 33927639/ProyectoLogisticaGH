@@ -43,38 +43,29 @@ class TblProductResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return $table->columns([
-            Tables\Columns\TextColumn::make('id')->label('ID'),
-            Tables\Columns\TextColumn::make('name')->label('Nombre'),
-            Tables\Columns\TextColumn::make('stock')->label('Stock'),
-            Tables\Columns\TextColumn::make('price')->label('Precio')->money('GTQ'),
-            Tables\Columns\IconColumn::make('status')
-                ->boolean()
-                ->label('Activo')
-                ->trueIcon('heroicon-s-check-circle')
-                ->falseIcon('heroicon-s-x-circle')
-                ->trueColor('success')
-                ->falseColor('danger'),
-            Tables\Columns\TextColumn::make('created_at')
-                ->label('Creado')
-                ->dateTime('d/m/Y H:i')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            Tables\Columns\TextColumn::make('updated_at')
-                ->label('Modificado')
-                ->dateTime('d/m/Y H:i')
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-        ])->filters([
-            //
-        ])->actions([
-            Tables\Actions\EditAction::make()
-                ->label('Editar'),
-            Tables\Actions\ViewAction::make()
-                ->label('Ver'),
-            Tables\Actions\DeleteAction::make()
-                ->label('Eliminar'),
-        ]);
+        return $table
+            ->query(
+                TblProduct::query()
+                    ->orderBy('created_at', 'desc') // más recientes primero
+                    ->limit(5) // solo 5 productos
+            )
+            ->columns([
+                Tables\Columns\TextColumn::make('id')->label('ID'),
+                Tables\Columns\TextColumn::make('name')->label('Nombre'),
+                Tables\Columns\TextColumn::make('stock')->label('Stock'),
+                Tables\Columns\TextColumn::make('price')->label('Precio')->money('GTQ'),
+                Tables\Columns\IconColumn::make('status')
+                    ->boolean()
+                    ->label('Activo')
+                    ->trueIcon('heroicon-s-check-circle')
+                    ->falseIcon('heroicon-s-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Creado')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable(),
+            ]);
     }
 
     public static function getRelations(): array
