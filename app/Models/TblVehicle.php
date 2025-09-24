@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TblVehicle
- * 
+ *
  * @property int $id_vehicle
  * @property string $license_plate
  * @property int $capacity
@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool|null $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|TblDeliveryAssignment[] $tbl_delivery_assignments
  * @property Collection|TblExpense[] $tbl_expenses
  * @property Collection|TblKilometer[] $tbl_kilometers

@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TblMaintenanceResource\Pages;
-use App\Filament\Resources\TblMaintenanceResource\RelationManagers;
-use App\Models\TblMaintenance;
+use App\Filament\Resources\TblMunicipalityResource\Pages;
+use App\Filament\Resources\TblMunicipalityResource\RelationManagers;
+use App\Models\TblMunicipality;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,9 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class TblMaintenanceResource extends Resource
+class TblMunicipalityResource extends Resource
 {
-    protected static ?string $model = TblMaintenance::class;
+    protected static ?string $model = TblMunicipality::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -56,9 +56,9 @@ class TblMaintenanceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTblMaintenances::route('/'),
-            'create' => Pages\CreateTblMaintenance::route('/create'),
-            'edit' => Pages\EditTblMaintenance::route('/{record}/edit'),
+            'index' => Pages\ListTblMunicipalities::route('/'),
+            'create' => Pages\CreateTblMunicipality::route('/create'),
+            'edit' => Pages\EditTblMunicipality::route('/{record}/edit'),
         ];
     }
 }
