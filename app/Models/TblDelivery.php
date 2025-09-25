@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TblDelivery
- * 
+ *
  * @property int $id_delivery
  * @property Carbon $delivery_date
  * @property string $delivery_status
@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool|null $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property TblRoute $tbl_route
  * @property TblDeliveryStatus $tbl_delivery_status
  * @property Collection|TblDeliveryAssignment[] $tbl_delivery_assignments
@@ -33,25 +33,32 @@ use Illuminate\Database\Eloquent\Model;
  */
 class TblDelivery extends Model
 {
-	protected $table = 'tbl_deliveries';
-	protected $primaryKey = 'id_delivery';
+    protected $table = 'tbl_deliveries';
+    protected $primaryKey = 'id_delivery';
 
-	protected $casts = [
-		'delivery_date' => 'datetime',
-		'id_route' => 'int',
-		'id_status' => 'int',
-		'status' => 'bool'
-	];
+    protected $casts = [
+        'delivery_date' => 'datetime',
+        'id_route'      => 'int',
+        'id_status'     => 'int',
+        'status'        => 'bool',
+        'id_customer'   => 'int',      // <-- NUEVO
+    ];
 
-	protected $fillable = [
-		'delivery_date',
-		'delivery_status',
-		'id_route',
-		'id_status',
-		'status'
-	];
+    protected $fillable = [
+        'delivery_date',
+        'delivery_status',
+        'id_route',
+        'id_status',
+        'status',
+        'id_customer',                 // <-- NUEVO
+    ];
 
-	public function tbl_route()
+    public function customer()
+    {
+        return $this->belongsTo(\App\Models\TblCustomer::class, 'id_customer', 'id_customer');
+    }
+
+    public function tbl_route()
 	{
 		return $this->belongsTo(TblRoute::class, 'id_route');
 	}

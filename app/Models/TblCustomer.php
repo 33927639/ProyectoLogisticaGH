@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class TblCustomer
- * 
+ *
  * @property int $id_customer
  * @property string $name
  * @property string|null $nit
@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool|null $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property TblMunicipality|null $tbl_municipality
  *
  * @package App\Models
@@ -51,4 +51,9 @@ class TblCustomer extends Model
 	{
 		return $this->belongsTo(TblMunicipality::class, 'id_municipality');
 	}
+    public function deliveries()
+    {
+        return $this->hasMany(\App\Models\TblDelivery::class, 'id_customer', 'id_customer');
+    }
+
 }
