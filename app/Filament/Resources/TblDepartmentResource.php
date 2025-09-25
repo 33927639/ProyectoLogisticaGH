@@ -17,13 +17,13 @@ class TblDepartmentResource extends Resource
 {
     protected static ?string $model = TblDepartment::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
     protected static ?string $navigationLabel = 'Departamentos';
 
-    protected static ?string $modelLabel = '';
+    protected static ?string $modelLabel = 'Departamento';
 
-    protected static ?string $pluralModelLabel = 'Departamentos';
+    protected static ?string $pluralModelLabel = 'Lista de Departamentos';
 
     protected static ?int $navigationSort = 1;
 
@@ -33,13 +33,16 @@ class TblDepartmentResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name_department')
-                    ->label('Nombre del Departamento')
-                    ->required()
-                    ->maxLength(100),
-                Forms\Components\Toggle::make('status_department')
-                    ->label('Estado'),
-
+                Forms\Components\Section::make('Información del Departamento')
+                    ->schema([
+                        Forms\Components\TextInput::make('name_department')
+                            ->label('Nombre del Departamento')
+                            ->required()
+                            ->maxLength(100),
+                        Forms\Components\Toggle::make('status_department')
+                            ->label('Estado Activo')
+                            ->default(true),
+                    ])->columns(2),
             ]);
     }
 
@@ -49,38 +52,83 @@ class TblDepartmentResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name_department')
                     ->label('Nombre del Departamento')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+                    
+                Tables\Columns\TextColumn::make('tbl_municipalities_count')
+                    ->label('Municipios')
+                    ->counts('tbl_municipalities')
+                    ->sortable()
+                    ->badge()
+                    ->color('info'),
+                    
                 Tables\Columns\IconColumn::make('status_department')
                     ->label('Estado')
-                    ->boolean(),
+                    ->boolean()
+                    ->sortable(),
+                    
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Creado')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                    
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Actualizado')
+                    ->dateTime('d/m/Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('active')
+                    ->label('Solo Activos')
+                    ->query(fn (Builder $query): Builder => $query->where('status_department', true))
+                    ->default(),
+                    
+                Tables\Filters\Filter::make('with_municipalities')
+                    ->label('Con Municipios')
+                    ->query(fn (Builder $query): Builder => $query->has('tbl_municipalities')),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->icon('heroicon-o-eye'),
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil'),
+                Tables\Actions\DeleteAction::make()
+                    ->icon('heroicon-o-trash'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('activate')
+                        ->label('Activar Seleccionados')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->action(function ($records) {
+                            $records->each(function ($record) {
+                                $record->update(['status_department' => true]);
+                            });
+                        })
+                        ->requiresConfirmation(),
+                    Tables\Actions\BulkAction::make('deactivate')
+                        ->label('Desactivar Seleccionados')
+                        ->icon('heroicon-o-x-circle')
+                        ->color('danger')
+                        ->action(function ($records) {
+                            $records->each(function ($record) {
+                                $record->update(['status_department' => false]);
+                            });
+                        })
+                        ->requiresConfirmation(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('name_department', 'asc');
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\MunicipalitiesRelationManager::class,
         ];
     }
 
