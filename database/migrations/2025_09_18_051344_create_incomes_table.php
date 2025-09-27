@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_customers', function (Blueprint $table) {
+        Schema::create('incomes', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 150);
-            $table->string('nit', 20)->nullable();
-            $table->string('phone', 20)->nullable();
-            $table->string('email', 100)->nullable();
-            $table->text('address')->nullable();
-            $table->foreignId('id_municipality')->constrained('tbl_municipalities');
+            $table->decimal('amount', 10)->nullable();
+            $table->text('description');
+            $table->date('income_date');
+            $table->foreignId('id_user')->constrained('users');
+            $table->foreignId('id_deliverie')->constrained('deliveries');
             $table->boolean('status')->nullable()->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_customers');
+        Schema::dropIfExists('incomes');
     }
 };

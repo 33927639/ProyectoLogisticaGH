@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_alert_statuses', function (Blueprint $table) {
+        Schema::create('delivery_assignments', function (Blueprint $table) {
             $table->id();
-            $table->string('name_alert', 50)->unique();
-            $table->text('description')->nullable();
-            $table->decimal('threshold_km', 10);
+            $table->foreignId('id_vehicle')->constrained('vehicles');
+            $table->foreignId('id_driver')->constrained('drivers');
+            $table->date('assignment_date');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_alert_statuses');
+        Schema::dropIfExists('delivery_assignments');
     }
 };

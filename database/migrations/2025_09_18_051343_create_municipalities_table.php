@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_municipalities', function (Blueprint $table) {
-            $table->integer('id_municipality', true);
+        Schema::create('municipalities', function (Blueprint $table) {
+            $table->id();
             $table->string('name_municipality', 100);
-            $table->integer('id_department')->index('fk__tbl_munic__id_de__3e52440b');
+            $table->foreignId('id_department')->constrained('departments');
             $table->boolean('status_municipality')->nullable()->default(true);
-            $table->dateTime('created_at')->nullable()->useCurrent();
-            $table->dateTime('updated_at')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_municipalities');
+        Schema::dropIfExists('municipalities');
     }
 };

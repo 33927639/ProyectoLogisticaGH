@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_expense_types', function (Blueprint $table) {
-            $table->integer('id_expense_type', true);
-            $table->string('name', 100)->unique('uq__tbl_expe__72e12f1b5657e8c3');
+        Schema::create('routes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('id_origin')->constrained('municipalities');
+            $table->foreignId('id_destination')->constrained('municipalities');
+            $table->decimal('distance_km', 10, 2);
             $table->boolean('status')->nullable()->default(true);
-            $table->dateTime('created_at')->nullable()->useCurrent();
-            $table->dateTime('updated_at')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_expense_types');
+        Schema::dropIfExists('routes');
     }
 };

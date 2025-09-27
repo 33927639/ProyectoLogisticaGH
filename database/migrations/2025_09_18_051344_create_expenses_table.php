@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_expenses', function (Blueprint $table) {
-            $table->integer('id_expense', true);
-            $table->integer('id_expense_type')->index('fk__tbl_expen__id_ex__0f624af8');
-            $table->integer('id_user')->index('fk__tbl_expen__id_us__10566f31');
-            $table->integer('id_vehicle')->nullable()->index('fk__tbl_expen__id_ve__114a936a');
+        Schema::create('expenses', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('id_expense_type')->constrained('expense_types');
+            $table->foreignId('id_user')->constrained('users');
+            $table->foreignId('id_vehicle')->nullable()->constrained('vehicles');
             $table->text('description');
             $table->decimal('amount', 10);
             $table->date('expense_date');
             $table->boolean('status')->nullable()->default(true);
-            $table->dateTime('created_at')->nullable()->useCurrent();
-            $table->dateTime('updated_at')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_expenses');
+        Schema::dropIfExists('expenses');
     }
 };

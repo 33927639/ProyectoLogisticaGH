@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_deliveries', function (Blueprint $table) {
+        Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
             $table->date('delivery_date');
             $table->string('delivery_status', 50);
-            $table->integer('id_route')->index('fk__tbl_deliv__id_ro__6ef57b66');
-            $table->integer('id_status')->default(1)->index('fk__tbl_deliv__id_st__6fe99f9f');
+            $table->foreignId('id_route')->constrained('routes');
+            $table->foreignId('id_status')->constrained('delivery_statuses');
             $table->boolean('status')->nullable()->default(true);
-            $table->dateTime('created_at')->nullable()->useCurrent();
-            $table->dateTime('updated_at')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_deliveries');
+        Schema::dropIfExists('deliveries');
     }
 };

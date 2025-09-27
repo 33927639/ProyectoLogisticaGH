@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_roles', function (Blueprint $table) {
-            $table->integer('id_role', true);
-            $table->string('name_role', 100)->unique('uq__tbl_role__e22a6879ff3ba2e6');
+        Schema::create('expense_types', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 100)->unique();
             $table->boolean('status')->nullable()->default(true);
-            $table->dateTime('created_at')->nullable()->useCurrent();
-            $table->dateTime('updated_at')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_roles');
+        Schema::dropIfExists('expense_types');
     }
 };

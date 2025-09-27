@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_incomes', function (Blueprint $table) {
-            $table->integer('id_income', true);
-            $table->decimal('amount', 10)->nullable();
-            $table->text('description');
-            $table->date('income_date');
-            $table->foreignId('id_user')->constrained('users');
-            $table->foreignId('id_deliverie')->constrained('tbl_deliveries');
+        Schema::create('delivery_guides', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('id_delivery')->constrained('deliveries');
+            $table->string('guide_number', 50)->unique();
             $table->boolean('status')->nullable()->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_incomes');
+        Schema::dropIfExists('delivery_guides');
     }
 };
