@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('delivery_status', 50);
             $table->foreignId('id_route')->constrained('routes');
             $table->foreignId('id_status')->constrained('delivery_statuses');
-            $table->boolean('status')->nullable()->default(true);
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });

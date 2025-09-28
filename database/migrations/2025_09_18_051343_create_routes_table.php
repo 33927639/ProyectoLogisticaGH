@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('id_origin')->constrained('municipalities');
             $table->foreignId('id_destination')->constrained('municipalities');
             $table->decimal('distance_km', 10, 2);
-            $table->boolean('status')->nullable()->default(true);
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });

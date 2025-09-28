@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('income_date');
             $table->foreignId('id_user')->constrained('users');
             $table->foreignId('id_deliverie')->constrained('deliveries');
-            $table->boolean('status')->nullable()->default(true);
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });

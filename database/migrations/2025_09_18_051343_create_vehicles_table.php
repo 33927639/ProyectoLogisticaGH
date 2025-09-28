@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('capacity');
             $table->string('plates', 20);
             $table->boolean('available')->default(true);
-            $table->boolean('status')->nullable()->default(true);
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });

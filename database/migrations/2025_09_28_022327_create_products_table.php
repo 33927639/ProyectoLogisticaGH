@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('maintenances', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_vehicle')->constrained('vehicles');
-            $table->string('type', 100);
-            $table->date('maintenance_date');
-            $table->boolean('approved')->nullable()->default(false);
+            $table->string('name', 150);
+            $table->integer('stock')->default(0);
+            $table->decimal('price', 10, 2)->nullable();
+            $table->text('description')->nullable();
+            $table->string('sku', 50)->unique();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('maintenances');
+        Schema::dropIfExists('products');
     }
 };

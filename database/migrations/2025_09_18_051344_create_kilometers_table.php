@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('kilometers_traveled', 10, 2);
             $table->foreignId('id_alert')->nullable()->constrained('alert_statuses');
             $table->date('record_date');
-            $table->boolean('status')->nullable()->default(true);
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });

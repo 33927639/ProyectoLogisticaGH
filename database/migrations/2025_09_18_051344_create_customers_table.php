@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('email', 100)->nullable();
             $table->text('address')->nullable();
             $table->foreignId('id_municipality')->constrained('municipalities');
-            $table->boolean('status')->nullable()->default(true);
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });

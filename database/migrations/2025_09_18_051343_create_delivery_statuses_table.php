@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name_status', 50)->unique();
             $table->text('description')->nullable();
-            $table->boolean('status')->nullable()->default(false);
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });

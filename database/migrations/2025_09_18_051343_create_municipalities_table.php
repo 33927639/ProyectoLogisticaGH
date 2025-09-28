@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name_municipality', 100);
             $table->foreignId('id_department')->constrained('departments');
-            $table->boolean('status_municipality')->nullable()->default(true);
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });

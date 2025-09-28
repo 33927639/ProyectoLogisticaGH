@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('description');
             $table->decimal('amount', 10);
             $table->date('expense_date');
-            $table->boolean('status')->nullable()->default(true);
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_delivery')->constrained('deliveries');
             $table->string('guide_number', 50)->unique();
-            $table->boolean('status')->nullable()->default(true);
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });
