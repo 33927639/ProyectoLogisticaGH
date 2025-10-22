@@ -1,5 +1,6 @@
 -- =========================================================
--- MySQL 8.0 - Script completo del sistema SanaLogistics v3.1
+-- 🚚 Sistema SanaLogistics - Versión SQL ajustada (MySQL 8.0)
+-- Estructura base completa y ordenada
 -- =========================================================
 
 CREATE DATABASE IF NOT EXISTS `SanaLogistics`
@@ -8,10 +9,11 @@ CREATE DATABASE IF NOT EXISTS `SanaLogistics`
 
 USE `SanaLogistics`;
 
+-- 🔧 Desactivar claves foráneas temporalmente
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- =========================================================
--- 🔹 1. Seguridad y usuarios
+-- 1️⃣ Tablas base: roles y usuarios
 -- =========================================================
 
 CREATE TABLE roles (
@@ -55,7 +57,7 @@ CREATE TABLE roles_users (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =========================================================
--- 🌍 2. Geografía y clientes
+-- 2️⃣ Geografía y clientes
 -- =========================================================
 
 CREATE TABLE departments (
@@ -91,13 +93,13 @@ CREATE TABLE customers (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =========================================================
--- 🚛 3. Operaciones logísticas
+-- 3️⃣ Operaciones logísticas
 -- =========================================================
 
 CREATE TABLE drivers (
   id_driver INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100),
-  license VARCHAR(50) UNIQUE NOT NULL,
+  license VARCHAR(50) NOT NULL UNIQUE,
   status TINYINT(1) DEFAULT 1,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NULL
@@ -105,7 +107,7 @@ CREATE TABLE drivers (
 
 CREATE TABLE vehicles (
   id_vehicle INT AUTO_INCREMENT PRIMARY KEY,
-  license_plate VARCHAR(20) UNIQUE NOT NULL,
+  license_plate VARCHAR(20) NOT NULL UNIQUE,
   capacity INT NOT NULL,
   available TINYINT(1) DEFAULT 1,
   status TINYINT(1) DEFAULT 1,
@@ -171,7 +173,7 @@ CREATE TABLE delivery_guides (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =========================================================
--- 💰 4. Finanzas
+-- 4️⃣ Finanzas
 -- =========================================================
 
 CREATE TABLE expense_types (
@@ -222,7 +224,7 @@ CREATE TABLE delivery_payments (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =========================================================
--- 🧰 5. Mantenimiento y alertas
+-- 5️⃣ Mantenimiento y alertas
 -- =========================================================
 
 CREATE TABLE alert_statuses (
@@ -296,7 +298,7 @@ CREATE TABLE notifications (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =========================================================
--- ⛽ 6. Combustible y rendimiento
+-- 6️⃣ Combustible y seguimiento
 -- =========================================================
 
 CREATE TABLE fuel_logs (
@@ -312,58 +314,6 @@ CREATE TABLE fuel_logs (
   FOREIGN KEY (user_id) REFERENCES users(id_user)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- =========================================================
--- 📦 7. Comercio y trazabilidad
--- =========================================================
-
-CREATE TABLE products (
-  id_product INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(150) NOT NULL,
-  sku VARCHAR(50) UNIQUE,
-  description TEXT,
-  unit_price DECIMAL(10,2),
-  weight_kg DECIMAL(10,2),
-  volume_m3 DECIMAL(10,3),
-  status TINYINT(1) DEFAULT 1,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE orders (
-  id_order INT AUTO_INCREMENT PRIMARY KEY,
-  customer_id INT NOT NULL,
-  order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-  total_amount DECIMAL(12,2),
-  status ENUM('PENDING','CONFIRMED','CANCELLED','DELIVERED') DEFAULT 'PENDING',
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NULL,
-  FOREIGN KEY (customer_id) REFERENCES customers(id_customer)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE delivery_products (
-  delivery_id INT NOT NULL,
-  product_id INT NOT NULL,
-  quantity INT DEFAULT 1,
-  unit_price DECIMAL(10,2),
-  subtotal DECIMAL(12,2) GENERATED ALWAYS AS (quantity * unit_price) STORED,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NULL,
-  PRIMARY KEY (delivery_id, product_id),
-  FOREIGN KEY (delivery_id) REFERENCES deliveries(id_delivery),
-  FOREIGN KEY (product_id) REFERENCES products(id_product)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE delivery_logs (
-  id_log INT AUTO_INCREMENT PRIMARY KEY,
-  delivery_id INT NOT NULL,
-  user_id INT NOT NULL,
-  action VARCHAR(100) NOT NULL,
-  note TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (delivery_id) REFERENCES deliveries(id_delivery),
-  FOREIGN KEY (user_id) REFERENCES users(id_user)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE vehicle_tracking (
   id_tracking INT AUTO_INCREMENT PRIMARY KEY,
   vehicle_id INT NOT NULL,
@@ -375,7 +325,7 @@ CREATE TABLE vehicle_tracking (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =========================================================
--- ⚙️ 8. Índices adicionales
+-- 🔹 Índices auxiliares
 -- =========================================================
 
 CREATE INDEX idx_customers_status_created ON customers (status, created_at);
@@ -383,9 +333,11 @@ CREATE INDEX idx_deliveries_status_created ON deliveries (status, created_at);
 CREATE INDEX idx_expenses_status_created ON expenses (status, created_at);
 CREATE INDEX idx_incomes_status_created ON incomes (status, created_at);
 CREATE INDEX idx_maintenances_status_created ON maintenances (status, created_at);
-CREATE INDEX idx_orders_status_created ON orders (status, created_at);
 CREATE INDEX idx_tracking_vehicle_time ON vehicle_tracking (vehicle_id, recorded_at);
 
+-- ✅ Reactivar las claves foráneas
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ✅ FIN DEL SCRIPT SanaLogistics v3.1
+-- =========================================================
+-- 🎯 FIN DEL SCRIPT
+-- =========================================================
