@@ -11,11 +11,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Si quieres conservar el usuario de prueba, lo dejas.
-        // Si no, puedes borrarlo.
-
-        // Llamar a tu seeder de Admin
-        $this->call(AdminUserSeeder::class);
+        $this->command->info('🌱 Iniciando seeders de SanaLogistics v3.1');
+        
+        // Ejecutar el seeder principal que incluye todo
+        $this->call(SanaLogisticsSeeder::class);
+        
+        $this->command->info('✅ Base de datos poblada correctamente!');
     }
 }
 

@@ -26,19 +26,39 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->brandName('SanaLogistics - Admin')
             ->login()
+            ->userMenuItems([
+                'profile' => \Filament\Navigation\MenuItem::make()
+                    ->label(fn() => auth()->user() ? auth()->user()->first_name . ' ' . auth()->user()->last_name : 'Usuario')
+                    ->url(fn() => '#'),
+                'logout_clean' => \Filament\Navigation\MenuItem::make()
+                    ->label('Logout Completo')
+                    ->url('/logout-all')
+                    ->icon('heroicon-o-arrow-right-on-rectangle'),
+            ])
             ->colors([
                 'primary' => Color::Amber,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-            ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
+                // Notification System
+                \App\Filament\Widgets\NotificationBellWidget::class,
+                
+                // Custom Dashboard Widgets
+                \App\Filament\Widgets\DeliveryStatsWidget::class,
+                \App\Filament\Widgets\LiveDeliveryStatusWidget::class,
+                \App\Filament\Widgets\FleetStatsWidget::class,
+                \App\Filament\Widgets\FinancialStatsWidget::class,
+                \App\Filament\Widgets\DeliveryTrendChart::class,
+                \App\Filament\Widgets\FinancialTrendChart::class,
+                \App\Filament\Widgets\MaintenancePendingWidget::class,
+                \App\Filament\Widgets\AlertsWidget::class,
+                
+                // Default Filament Widgets
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
