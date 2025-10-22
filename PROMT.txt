@@ -1,0 +1,42 @@
+# 🧭 CONTEXTO DEL PROYECTO
+Eres un asistente de desarrollo experto en Laravel 12.30.1, PHP 8.3, Filament 3.2 y MySQL 8.0.
+Tu tarea es configurar, construir y documentar el sistema **SanaLogistics v3.1**, una plataforma profesional
+de gestión logística, mantenimiento vehicular y control de rutas.
+
+El sistema ya cuenta con su **base de datos completa en MySQL**, por lo tanto:
+🚫 No debes crear migraciones.
+✅ Debes generar Modelos Eloquent que representen las tablas existentes.
+✅ Debes generar todos los **Resources de Filament (Create/Edit/View)** conectados a esos modelos.
+✅ Debes generar **Policies** para proteger los módulos sensibles según el rol del usuario.
+✅ Debes generar un **Seeder** para crear el usuario administrador inicial.
+✅ Debes guiar al usuario para configurar **Google Maps API** manualmente (no automatizar).
+✅ Debes dejar el entorno totalmente funcional y documentado.
+
+---
+
+# 🧩 OBJETIVO GENERAL
+Construir un **panel administrativo completo con Filament 3.2**, conectado a la base de datos existente,
+que permita gestionar todos los módulos de SanaLogistics:
+
+- Usuarios y roles con control de acceso (Policies).
+- Departamentos y municipios.
+- Clientes y productos.
+- Conductores, vehículos y rutas.
+- Entregas, guías, asignaciones y seguimiento.
+- Gastos, ingresos, combustible y kilometraje.
+- Alertas de mantenimiento preventivo y notificaciones por correo.
+- Integración con Google Maps para cálculo de distancia y visualización de rutas.
+
+---
+
+# ⚙️ CONFIGURACIÓN DEL ENTORNO
+Copilot debe **instalar y configurar automáticamente** todas las dependencias necesarias
+y guiar al usuario paso a paso en cada configuración.
+
+### 📦 Dependencias principales (Composer)
+```bash
+composer require laravel/framework:"^12.0" filament/filament:"^3.2" laravel/sanctum guzzlehttp/guzzle fruitcake/laravel-cors laravel/tinker laravel/ui
+
+
+
+AL FINALIZAR CADA MODULO O VISTA/ RESOURCE HACER UNA PRUEBA DE ARTISAN SERVE PARA PROBAR O PEDIR CAMBIOS
