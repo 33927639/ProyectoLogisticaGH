@@ -1,0 +1,59 @@
+<?php
+
+namespace {{ modelNamespace }};
+
+
+use Illuminate\Database\Eloquent\Model;
+{{ useSoftDeletes }}
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class {{ model }} extends Model
+{
+
+    {{ softDeletesTrait }}
+    use HasFactory;
+
+    protected $table = '{{ tableName }}';
+
+
+    protected $fillable =
+        {{ fillable }};
+
+
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts =
+        {{ casts }};
+
+
+
+    /**
+     * Validation rules
+     *
+     * @var array
+     */
+    public static $rules =
+    {{ validationRules }};
+
+
+    /**
+     * Custom messages for validation
+     *
+     * @var array
+     */
+    public static $messages =[
+
+    ];
+
+
+    /**
+     * Accessor for relationships
+     *
+     * @var array
+     */
+    {{ relationships }}
+
+}
