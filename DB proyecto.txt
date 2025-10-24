@@ -1,0 +1,343 @@
+-- =========================================================
+-- 🚚 Sistema SanaLogistics - Versión SQL ajustada (MySQL 8.0)
+-- Estructura base completa y ordenada
+-- =========================================================
+
+CREATE DATABASE IF NOT EXISTS `SanaLogistics`
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_0900_ai_ci;
+
+USE `SanaLogistics`;
+
+-- 🔧 Desactivar claves foráneas temporalmente
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- =========================================================
+-- 1️⃣ Tablas base: roles y usuarios
+-- =========================================================
+
+CREATE TABLE roles (
+  id_role INT AUTO_INCREMENT PRIMARY KEY,
+  name_role VARCHAR(100) NOT NULL UNIQUE,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE users (
+  id_user INT AUTO_INCREMENT PRIMARY KEY,
+  first_name VARCHAR(100),
+  last_name VARCHAR(100),
+  username VARCHAR(100) NOT NULL UNIQUE,
+  email VARCHAR(150) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE user_tokens (
+  id_token INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  token_hash CHAR(64) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  revoked TINYINT(1) DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id_user) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE roles_users (
+  user_id INT NOT NULL,
+  role_id INT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  PRIMARY KEY (user_id, role_id),
+  FOREIGN KEY (user_id) REFERENCES users(id_user) ON DELETE CASCADE,
+  FOREIGN KEY (role_id) REFERENCES roles(id_role) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================================================
+-- 2️⃣ Geografía y clientes
+-- =========================================================
+
+CREATE TABLE departments (
+  id_department INT AUTO_INCREMENT PRIMARY KEY,
+  name_department VARCHAR(100) NOT NULL UNIQUE,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE municipalities (
+  id_municipality INT AUTO_INCREMENT PRIMARY KEY,
+  name_municipality VARCHAR(100) NOT NULL,
+  department_id INT NOT NULL,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  FOREIGN KEY (department_id) REFERENCES departments(id_department)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE customers (
+  id_customer INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(150) NOT NULL,
+  nit VARCHAR(20),
+  phone VARCHAR(20),
+  email VARCHAR(100),
+  address TEXT,
+  municipality_id INT,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  FOREIGN KEY (municipality_id) REFERENCES municipalities(id_municipality)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================================================
+-- 3️⃣ Operaciones logísticas
+-- =========================================================
+
+CREATE TABLE drivers (
+  id_driver INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  license VARCHAR(50) NOT NULL UNIQUE,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE vehicles (
+  id_vehicle INT AUTO_INCREMENT PRIMARY KEY,
+  license_plate VARCHAR(20) NOT NULL UNIQUE,
+  capacity INT NOT NULL,
+  available TINYINT(1) DEFAULT 1,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE routes (
+  id_route INT AUTO_INCREMENT PRIMARY KEY,
+  origin_id INT NOT NULL,
+  destination_id INT NOT NULL,
+  distance_km DECIMAL(10,2) NOT NULL,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  FOREIGN KEY (origin_id) REFERENCES municipalities(id_municipality),
+  FOREIGN KEY (destination_id) REFERENCES municipalities(id_municipality)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE delivery_statuses (
+  id_status INT AUTO_INCREMENT PRIMARY KEY,
+  name_status VARCHAR(50) NOT NULL UNIQUE,
+  description TEXT,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE deliveries (
+  id_delivery INT AUTO_INCREMENT PRIMARY KEY,
+  delivery_date DATE NOT NULL,
+  route_id INT NOT NULL,
+  status_id INT NOT NULL,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  FOREIGN KEY (route_id) REFERENCES routes(id_route),
+  FOREIGN KEY (status_id) REFERENCES delivery_statuses(id_status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE delivery_assignments (
+  delivery_id INT NOT NULL,
+  vehicle_id INT NOT NULL,
+  driver_id INT NOT NULL,
+  assignment_date DATE NOT NULL,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  PRIMARY KEY (delivery_id, vehicle_id, driver_id),
+  FOREIGN KEY (delivery_id) REFERENCES deliveries(id_delivery),
+  FOREIGN KEY (vehicle_id) REFERENCES vehicles(id_vehicle),
+  FOREIGN KEY (driver_id) REFERENCES drivers(id_driver)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE delivery_guides (
+  id_guide INT AUTO_INCREMENT PRIMARY KEY,
+  delivery_id INT NOT NULL,
+  guide_number VARCHAR(50) NOT NULL UNIQUE,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  FOREIGN KEY (delivery_id) REFERENCES deliveries(id_delivery)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================================================
+-- 4️⃣ Finanzas
+-- =========================================================
+
+CREATE TABLE expense_types (
+  id_expense_type INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE expenses (
+  id_expense INT AUTO_INCREMENT PRIMARY KEY,
+  expense_type_id INT NOT NULL,
+  user_id INT NOT NULL,
+  vehicle_id INT NULL,
+  description TEXT NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  expense_date DATE NOT NULL,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  FOREIGN KEY (expense_type_id) REFERENCES expense_types(id_expense_type),
+  FOREIGN KEY (user_id) REFERENCES users(id_user),
+  FOREIGN KEY (vehicle_id) REFERENCES vehicles(id_vehicle)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE incomes (
+  id_income INT AUTO_INCREMENT PRIMARY KEY,
+  amount DECIMAL(10,2),
+  description TEXT NOT NULL,
+  income_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  user_id INT NOT NULL,
+  delivery_id INT NULL,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id_user),
+  FOREIGN KEY (delivery_id) REFERENCES deliveries(id_delivery)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE delivery_payments (
+  id_payment INT AUTO_INCREMENT PRIMARY KEY,
+  delivery_id INT NOT NULL UNIQUE,
+  amount DECIMAL(10,2) NOT NULL,
+  payment_method ENUM('CASH','CARD','TRANSFER','OTHER') DEFAULT 'CASH',
+  payment_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (delivery_id) REFERENCES deliveries(id_delivery)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================================================
+-- 5️⃣ Mantenimiento y alertas
+-- =========================================================
+
+CREATE TABLE alert_statuses (
+  id_alert INT AUTO_INCREMENT PRIMARY KEY,
+  name_alert VARCHAR(50) NOT NULL UNIQUE,
+  description TEXT,
+  threshold_km DECIMAL(10,2) NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE maintenance_requests (
+  id_request INT AUTO_INCREMENT PRIMARY KEY,
+  vehicle_id INT NOT NULL,
+  request_date DATE NOT NULL,
+  reason TEXT NOT NULL,
+  approved_by INT NULL,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  FOREIGN KEY (vehicle_id) REFERENCES vehicles(id_vehicle),
+  FOREIGN KEY (approved_by) REFERENCES users(id_user)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE maintenances (
+  id_maintenance INT AUTO_INCREMENT PRIMARY KEY,
+  vehicle_id INT NOT NULL,
+  request_id INT NULL,
+  type VARCHAR(100) NOT NULL,
+  maintenance_date DATE NOT NULL,
+  approved TINYINT(1) DEFAULT 0,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  FOREIGN KEY (vehicle_id) REFERENCES vehicles(id_vehicle),
+  FOREIGN KEY (request_id) REFERENCES maintenance_requests(id_request)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE kilometers (
+  id_kilometer INT AUTO_INCREMENT PRIMARY KEY,
+  delivery_id INT NOT NULL,
+  vehicle_id INT NOT NULL,
+  alert_id INT NULL,
+  kilometers_traveled DECIMAL(10,2) NOT NULL,
+  record_date DATE NOT NULL,
+  status TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL,
+  FOREIGN KEY (delivery_id) REFERENCES deliveries(id_delivery),
+  FOREIGN KEY (vehicle_id) REFERENCES vehicles(id_vehicle),
+  FOREIGN KEY (alert_id) REFERENCES alert_statuses(id_alert)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE notifications (
+  id_notification INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NULL,
+  vehicle_id INT NULL,
+  maintenance_id INT NULL,
+  delivery_id INT NULL,
+  type ENUM('MAINTENANCE','DELIVERY') NOT NULL,
+  channel ENUM('EMAIL') DEFAULT 'EMAIL',
+  message TEXT NOT NULL,
+  trigger_km DECIMAL(10,2) NULL,
+  sent TINYINT(1) DEFAULT 0,
+  sent_at DATETIME NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id_user),
+  FOREIGN KEY (vehicle_id) REFERENCES vehicles(id_vehicle),
+  FOREIGN KEY (maintenance_id) REFERENCES maintenances(id_maintenance),
+  FOREIGN KEY (delivery_id) REFERENCES deliveries(id_delivery)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================================================
+-- 6️⃣ Combustible y seguimiento
+-- =========================================================
+
+CREATE TABLE fuel_logs (
+  id_fuel_log INT AUTO_INCREMENT PRIMARY KEY,
+  vehicle_id INT NOT NULL,
+  user_id INT NOT NULL,
+  liters DECIMAL(10,2) NOT NULL,
+  price_per_liter DECIMAL(10,2) NOT NULL,
+  total_cost DECIMAL(10,2) GENERATED ALWAYS AS (liters * price_per_liter) STORED,
+  distance_km DECIMAL(10,2) NULL,
+  refuel_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (vehicle_id) REFERENCES vehicles(id_vehicle),
+  FOREIGN KEY (user_id) REFERENCES users(id_user)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE vehicle_tracking (
+  id_tracking INT AUTO_INCREMENT PRIMARY KEY,
+  vehicle_id INT NOT NULL,
+  latitude DECIMAL(10,7) NOT NULL,
+  longitude DECIMAL(10,7) NOT NULL,
+  speed_kmh DECIMAL(6,2),
+  recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (vehicle_id) REFERENCES vehicles(id_vehicle)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================================================
+-- 🔹 Índices auxiliares
+-- =========================================================
+
+CREATE INDEX idx_customers_status_created ON customers (status, created_at);
+CREATE INDEX idx_deliveries_status_created ON deliveries (status, created_at);
+CREATE INDEX idx_expenses_status_created ON expenses (status, created_at);
+CREATE INDEX idx_incomes_status_created ON incomes (status, created_at);
+CREATE INDEX idx_maintenances_status_created ON maintenances (status, created_at);
+CREATE INDEX idx_tracking_vehicle_time ON vehicle_tracking (vehicle_id, recorded_at);
+
+-- ✅ Reactivar las claves foráneas
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- =========================================================
+-- 🎯 FIN DEL SCRIPT
+-- =========================================================
