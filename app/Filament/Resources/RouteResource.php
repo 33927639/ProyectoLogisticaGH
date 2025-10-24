@@ -6,6 +6,7 @@ use App\Filament\Resources\RouteResource\Pages;
 use App\Filament\Resources\RouteResource\RelationManagers;
 use App\Models\Route;
 use App\Models\Municipality;
+use App\Services\GoogleMapsService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -22,6 +23,7 @@ class RouteResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
     
     protected static ?string $navigationGroup = 'Operaciones';
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -38,10 +40,8 @@ class RouteResource extends Resource
                                     ->preload()
                                     ->required()
                                     ->live()
-                                    ->afterStateUpdated(function ($state, $set, $get) {
-                                        if ($state && $get('destination_id')) {
-                                            static::calculateDistanceAndCheckDuplicate($state, $get('destination_id'), $set);
-                                        }
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                        static::calculateDistanceIfBothSelected($get, $set);
                                     }),
                                 Forms\Components\Select::make('destination_id')
                                     ->label('Municipio Destino')
@@ -50,96 +50,27 @@ class RouteResource extends Resource
                                     ->preload()
                                     ->required()
                                     ->live()
-                                    ->afterStateUpdated(function ($state, $set, $get) {
-                                        if ($state && $get('origin_id')) {
-                                            static::calculateDistanceAndCheckDuplicate($get('origin_id'), $state, $set);
-                                        }
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                        static::calculateDistanceIfBothSelected($get, $set);
                                     }),
                                 Forms\Components\TextInput::make('distance_km')
                                     ->label('Distancia (km)')
                                     ->numeric()
                                     ->step(0.01)
                                     ->suffix('km')
-                                    ->required()
-                                    ->readOnly(),
+                                    ->helperText('Calculada automáticamente con Google Maps')
+                                    ->required(),
+                                Forms\Components\TextInput::make('estimated_duration')
+                                    ->label('Tiempo Estimado (min)')
+                                    ->numeric()
+                                    ->suffix('min')
+                                    ->helperText('Calculado automáticamente con Google Maps'),
                                 Forms\Components\Toggle::make('status')
                                     ->label('Activa')
                                     ->default(true),
                             ]),
-                    ])
-                    ->description('La distancia se calcula automáticamente usando Google Maps. Si la ruta ya existe, se mostrará la información existente.'),
-                
-                Forms\Components\Section::make('Información de Ruta Existente')
-                    ->schema([
-                        Forms\Components\Placeholder::make('existing_route_info')
-                            ->label('')
-                            ->content(function ($get) {
-                                if ($get('origin_id') && $get('destination_id')) {
-                                    $existingRoute = \App\Models\Route::findExistingRoute($get('origin_id'), $get('destination_id'));
-                                    if ($existingRoute) {
-                                        return "⚠️ Ya existe una ruta entre estos municipios: {$existingRoute->route_name} ({$existingRoute->distance_km} km)";
-                                    }
-                                }
-                                return '';
-                            })
-                            ->visible(function ($get) {
-                                if ($get('origin_id') && $get('destination_id')) {
-                                    return \App\Models\Route::findExistingRoute($get('origin_id'), $get('destination_id')) !== null;
-                                }
-                                return false;
-                            }),
-                    ])
-                    ->visible(function ($get) {
-                        if ($get('origin_id') && $get('destination_id')) {
-                            return \App\Models\Route::findExistingRoute($get('origin_id'), $get('destination_id')) !== null;
-                        }
-                        return false;
-                    })
-                    ->color('warning'),
+                    ]),
             ]);
-    }
-
-    protected static function calculateDistanceAndCheckDuplicate($originId, $destinationId, $set)
-    {
-        if (!$originId || !$destinationId || $originId === $destinationId) {
-            return;
-        }
-
-        // Buscar ruta existente
-        $existingRoute = \App\Models\Route::findExistingRoute($originId, $destinationId);
-        
-        if ($existingRoute) {
-            // Si existe, usar la distancia existente
-            $set('distance_km', $existingRoute->distance_km);
-            return;
-        }
-
-        // Si no existe, calcular nueva distancia
-        try {
-            $origin = \App\Models\Municipality::find($originId);
-            $destination = \App\Models\Municipality::find($destinationId);
-            
-            if ($origin && $destination) {
-                $googleMaps = app(\App\Services\GoogleMapsService::class);
-                $distanceData = $googleMaps->calculateDistance(
-                    $origin->name_municipality,
-                    $destination->name_municipality
-                );
-                
-                if ($distanceData) {
-                    $set('distance_km', $distanceData['distance_km']);
-                } else {
-                    $set('distance_km', 0);
-                }
-            }
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error calculating route distance', [
-                'error' => $e->getMessage(),
-                'origin_id' => $originId,
-                'destination_id' => $destinationId
-            ]);
-            $set('distance_km', 0);
-        }
     }
 
     public static function table(Table $table): Table
@@ -158,6 +89,11 @@ class RouteResource extends Resource
                     ->label('Distancia')
                     ->numeric(2)
                     ->suffix(' km')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('estimated_duration')
+                    ->label('Tiempo Est.')
+                    ->numeric(0)
+                    ->suffix(' min')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('status')
                     ->label('Activa')
@@ -187,51 +123,96 @@ class RouteResource extends Resource
                     ->label('Activa'),
             ])
             ->actions([
-                Tables\Actions\Action::make('recalculate_distance')
-                    ->label('Recalcular Distancia')
-                    ->icon('heroicon-m-arrow-path')
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('calculate_distance')
+                    ->label('Calcular Distancia')
+                    ->icon('heroicon-o-map-pin')
                     ->color('info')
                     ->action(function (Route $record) {
-                        try {
-                            $googleMaps = app(\App\Services\GoogleMapsService::class);
-                            $distanceData = $googleMaps->calculateDistance(
-                                $record->origin->name_municipality,
-                                $record->destination->name_municipality
-                            );
-                            
-                            if ($distanceData) {
-                                $oldDistance = $record->distance_km;
-                                $record->update(['distance_km' => $distanceData['distance_km']]);
-                                
-                                Notification::make()
-                                    ->title('Distancia Recalculada')
-                                    ->body("Distancia actualizada de {$oldDistance} km a {$distanceData['distance_km']} km")
-                                    ->success()
-                                    ->send();
-                            } else {
-                                Notification::make()
-                                    ->title('Error')
-                                    ->body('No se pudo calcular la distancia. Verifique su conexión a internet.')
-                                    ->danger()
-                                    ->send();
-                            }
-                        } catch (\Exception $e) {
+                        $googleMapsService = app(GoogleMapsService::class);
+                        
+                        if (!$record->origin || !$record->destination) {
                             Notification::make()
                                 ->title('Error')
-                                ->body('Error al recalcular distancia: ' . $e->getMessage())
+                                ->body('La ruta debe tener origen y destino definidos')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        $origin = $record->origin->name_municipality . ', Guatemala';
+                        $destination = $record->destination->name_municipality . ', Guatemala';
+                        
+                        $result = $googleMapsService->calculateDistance($origin, $destination);
+                        
+                        if ($result['status'] === 'OK') {
+                            $record->update([
+                                'distance_km' => $result['distance'],
+                                'estimated_duration' => $result['duration']
+                            ]);
+                            
+                            Notification::make()
+                                ->title('Distancia Calculada')
+                                ->body("Distancia: {$result['distance_text']}, Tiempo: {$result['duration_text']}")
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Error al Calcular')
+                                ->body('No se pudo calcular la distancia. Verifica la configuración de Google Maps.')
                                 ->danger()
                                 ->send();
                         }
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading('Recalcular Distancia')
-                    ->modalDescription('¿Está seguro que desea recalcular la distancia usando Google Maps?'),
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('calculate_distances')
+                        ->label('Calcular Distancias')
+                        ->icon('heroicon-o-map-pin')
+                        ->color('info')
+                        ->action(function (\Illuminate\Database\Eloquent\Collection $records) {
+                            $googleMapsService = app(GoogleMapsService::class);
+                            $calculated = 0;
+                            $errors = 0;
+                            
+                            foreach ($records as $record) {
+                                if (!$record->origin || !$record->destination) {
+                                    $errors++;
+                                    continue;
+                                }
+
+                                $origin = $record->origin->name_municipality . ', Guatemala';
+                                $destination = $record->destination->name_municipality . ', Guatemala';
+                                
+                                $result = $googleMapsService->calculateDistance($origin, $destination);
+                                
+                                if ($result['status'] === 'OK') {
+                                    $record->update([
+                                        'distance_km' => $result['distance'],
+                                        'estimated_duration' => $result['duration']
+                                    ]);
+                                    $calculated++;
+                                } else {
+                                    $errors++;
+                                }
+                                
+                                // Pausa para no sobrecargar la API
+                                usleep(200000); // 0.2 segundos
+                            }
+                            
+                            Notification::make()
+                                ->title('Cálculo Completado')
+                                ->body("Calculadas: {$calculated}, Errores: {$errors}")
+                                ->success()
+                                ->send();
+                        })
+                        ->requiresConfirmation()
+                        ->modalHeading('Calcular Distancias')
+                        ->modalDescription('Esto calculará las distancias para todas las rutas seleccionadas usando Google Maps API.')
+                        ->modalSubmitActionLabel('Calcular'),
                 ]),
             ]);
     }
@@ -250,5 +231,66 @@ class RouteResource extends Resource
             'create' => Pages\CreateRoute::route('/create'),
             'edit' => Pages\EditRoute::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * Calculate distance automatically when both origin and destination are selected
+     */
+    protected static function calculateDistanceIfBothSelected($get, $set)
+    {
+        $originId = $get('origin_id');
+        $destinationId = $get('destination_id');
+
+        if ($originId && $destinationId && $originId != $destinationId) {
+            try {
+                $origin = Municipality::find($originId);
+                $destination = Municipality::find($destinationId);
+                
+                if ($origin && $destination) {
+                    $googleMapsService = app(GoogleMapsService::class);
+                    $originAddress = $origin->name_municipality . ', Guatemala';
+                    $destinationAddress = $destination->name_municipality . ', Guatemala';
+                    
+                    $result = $googleMapsService->calculateDistance($originAddress, $destinationAddress);
+                    
+                    if ($result['status'] === 'OK') {
+                        $set('distance_km', round($result['distance'], 2));
+                        $set('estimated_duration', round($result['duration']));
+                        
+                        // Enviar notificación de éxito
+                        Notification::make()
+                            ->title('Distancia Calculada Automáticamente')
+                            ->body("Distancia: {$result['distance_text']}, Tiempo: {$result['duration_text']}")
+                            ->success()
+                            ->send();
+                    } else {
+                        // Limpiar campos si hay error
+                        $set('distance_km', null);
+                        $set('estimated_duration', null);
+                        
+                        if ($result['status'] === 'API_KEY_MISSING') {
+                            Notification::make()
+                                ->title('Google Maps no configurado')
+                                ->body('La API key de Google Maps no está configurada')
+                                ->warning()
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Error al calcular distancia')
+                                ->body('No se pudo calcular la distancia automáticamente')
+                                ->warning()
+                                ->send();
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                // Silenciar errores en el formulario para evitar interrupciones
+                \Log::error('Error calculating distance in form', [
+                    'error' => $e->getMessage(),
+                    'origin_id' => $originId,
+                    'destination_id' => $destinationId
+                ]);
+            }
+        }
     }
 }

@@ -94,6 +94,7 @@ CREATE TABLE `cache` (
 
 LOCK TABLES `cache` WRITE;
 /*!40000 ALTER TABLE `cache` DISABLE KEYS */;
+INSERT INTO `cache` VALUES ('proyecto-cache-delivery_stats_2025-10-23','a:4:{i:0;O:41:\"Filament\\Widgets\\StatsOverviewWidget\\Stat\":17:{s:9:\"\0*\0except\";a:0:{}s:13:\"componentName\";N;s:10:\"attributes\";N;s:8:\"\0*\0chart\";N;s:13:\"\0*\0chartColor\";N;s:8:\"\0*\0color\";s:7:\"primary\";s:7:\"\0*\0icon\";N;s:14:\"\0*\0description\";s:17:\"Total programadas\";s:18:\"\0*\0descriptionIcon\";s:24:\"heroicon-m-calendar-days\";s:26:\"\0*\0descriptionIconPosition\";N;s:19:\"\0*\0descriptionColor\";N;s:18:\"\0*\0extraAttributes\";a:0:{}s:24:\"\0*\0shouldOpenUrlInNewTab\";b:0;s:6:\"\0*\0url\";N;s:5:\"\0*\0id\";N;s:8:\"\0*\0label\";s:12:\"Entregas Hoy\";s:8:\"\0*\0value\";i:2;}i:1;O:41:\"Filament\\Widgets\\StatsOverviewWidget\\Stat\":17:{s:9:\"\0*\0except\";a:0:{}s:13:\"componentName\";N;s:10:\"attributes\";N;s:8:\"\0*\0chart\";N;s:13:\"\0*\0chartColor\";N;s:8:\"\0*\0color\";s:4:\"gray\";s:7:\"\0*\0icon\";N;s:14:\"\0*\0description\";s:11:\"Por aceptar\";s:18:\"\0*\0descriptionIcon\";s:16:\"heroicon-m-clock\";s:26:\"\0*\0descriptionIconPosition\";N;s:19:\"\0*\0descriptionColor\";N;s:18:\"\0*\0extraAttributes\";a:0:{}s:24:\"\0*\0shouldOpenUrlInNewTab\";b:0;s:6:\"\0*\0url\";N;s:5:\"\0*\0id\";N;s:8:\"\0*\0label\";s:10:\"Pendientes\";s:8:\"\0*\0value\";i:2;}i:2;O:41:\"Filament\\Widgets\\StatsOverviewWidget\\Stat\":17:{s:9:\"\0*\0except\";a:0:{}s:13:\"componentName\";N;s:10:\"attributes\";N;s:8:\"\0*\0chart\";N;s:13:\"\0*\0chartColor\";N;s:8:\"\0*\0color\";s:7:\"warning\";s:7:\"\0*\0icon\";N;s:14:\"\0*\0description\";s:25:\"Agarradas: 0 | En Ruta: 0\";s:18:\"\0*\0descriptionIcon\";s:16:\"heroicon-m-truck\";s:26:\"\0*\0descriptionIconPosition\";N;s:19:\"\0*\0descriptionColor\";N;s:18:\"\0*\0extraAttributes\";a:0:{}s:24:\"\0*\0shouldOpenUrlInNewTab\";b:0;s:6:\"\0*\0url\";N;s:5:\"\0*\0id\";N;s:8:\"\0*\0label\";s:10:\"En Proceso\";s:8:\"\0*\0value\";i:0;}i:3;O:41:\"Filament\\Widgets\\StatsOverviewWidget\\Stat\":17:{s:9:\"\0*\0except\";a:0:{}s:13:\"componentName\";N;s:10:\"attributes\";N;s:8:\"\0*\0chart\";N;s:13:\"\0*\0chartColor\";N;s:8:\"\0*\0color\";s:7:\"success\";s:7:\"\0*\0icon\";N;s:14:\"\0*\0description\";s:13:\"0% completado\";s:18:\"\0*\0descriptionIcon\";s:23:\"heroicon-m-check-circle\";s:26:\"\0*\0descriptionIconPosition\";N;s:19:\"\0*\0descriptionColor\";N;s:18:\"\0*\0extraAttributes\";a:0:{}s:24:\"\0*\0shouldOpenUrlInNewTab\";b:0;s:6:\"\0*\0url\";N;s:5:\"\0*\0id\";N;s:8:\"\0*\0label\";s:11:\"Completadas\";s:8:\"\0*\0value\";i:0;}}',1761233938),('proyecto-cache-fleet_stats','a:4:{i:0;O:41:\"Filament\\Widgets\\StatsOverviewWidget\\Stat\":17:{s:9:\"\0*\0except\";a:0:{}s:13:\"componentName\";N;s:10:\"attributes\";N;s:8:\"\0*\0chart\";N;s:13:\"\0*\0chartColor\";N;s:8:\"\0*\0color\";s:7:\"primary\";s:7:\"\0*\0icon\";N;s:14:\"\0*\0description\";s:18:\"Vehículos activos\";s:18:\"\0*\0descriptionIcon\";s:16:\"heroicon-m-truck\";s:26:\"\0*\0descriptionIconPosition\";N;s:19:\"\0*\0descriptionColor\";N;s:18:\"\0*\0extraAttributes\";a:0:{}s:24:\"\0*\0shouldOpenUrlInNewTab\";b:0;s:6:\"\0*\0url\";N;s:5:\"\0*\0id\";N;s:8:\"\0*\0label\";s:11:\"Flota Total\";s:8:\"\0*\0value\";i:4;}i:1;O:41:\"Filament\\Widgets\\StatsOverviewWidget\\Stat\":17:{s:9:\"\0*\0except\";a:0:{}s:13:\"componentName\";N;s:10:\"attributes\";N;s:8:\"\0*\0chart\";N;s:13:\"\0*\0chartColor\";N;s:8:\"\0*\0color\";s:7:\"success\";s:7:\"\0*\0icon\";N;s:14:\"\0*\0description\";s:15:\"0% utilización\";s:18:\"\0*\0descriptionIcon\";s:15:\"heroicon-m-play\";s:26:\"\0*\0descriptionIconPosition\";N;s:19:\"\0*\0descriptionColor\";N;s:18:\"\0*\0extraAttributes\";a:0:{}s:24:\"\0*\0shouldOpenUrlInNewTab\";b:0;s:6:\"\0*\0url\";N;s:5:\"\0*\0id\";N;s:8:\"\0*\0label\";s:13:\"En Operación\";s:8:\"\0*\0value\";i:0;}i:2;O:41:\"Filament\\Widgets\\StatsOverviewWidget\\Stat\":17:{s:9:\"\0*\0except\";a:0:{}s:13:\"componentName\";N;s:10:\"attributes\";N;s:8:\"\0*\0chart\";N;s:13:\"\0*\0chartColor\";N;s:8:\"\0*\0color\";s:7:\"warning\";s:7:\"\0*\0icon\";N;s:14:\"\0*\0description\";s:14:\"No disponibles\";s:18:\"\0*\0descriptionIcon\";s:29:\"heroicon-m-wrench-screwdriver\";s:26:\"\0*\0descriptionIconPosition\";N;s:19:\"\0*\0descriptionColor\";N;s:18:\"\0*\0extraAttributes\";a:0:{}s:24:\"\0*\0shouldOpenUrlInNewTab\";b:0;s:6:\"\0*\0url\";N;s:5:\"\0*\0id\";N;s:8:\"\0*\0label\";s:16:\"En Mantenimiento\";s:8:\"\0*\0value\";i:0;}i:3;O:41:\"Filament\\Widgets\\StatsOverviewWidget\\Stat\":17:{s:9:\"\0*\0except\";a:0:{}s:13:\"componentName\";N;s:10:\"attributes\";N;s:8:\"\0*\0chart\";N;s:13:\"\0*\0chartColor\";N;s:8:\"\0*\0color\";s:4:\"info\";s:7:\"\0*\0icon\";N;s:14:\"\0*\0description\";s:19:\"Listos para asignar\";s:18:\"\0*\0descriptionIcon\";s:23:\"heroicon-m-check-circle\";s:26:\"\0*\0descriptionIconPosition\";N;s:19:\"\0*\0descriptionColor\";N;s:18:\"\0*\0extraAttributes\";a:0:{}s:24:\"\0*\0shouldOpenUrlInNewTab\";b:0;s:6:\"\0*\0url\";N;s:5:\"\0*\0id\";N;s:8:\"\0*\0label\";s:11:\"Disponibles\";s:8:\"\0*\0value\";i:4;}}',1761233953),('proyecto-cache-livewire-rate-limiter:a17961fa74e9275d529f489537f179c05d50c2f3','i:1;',1761233783),('proyecto-cache-livewire-rate-limiter:a17961fa74e9275d529f489537f179c05d50c2f3:timer','i:1761233783;',1761233783);
 /*!40000 ALTER TABLE `cache` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -165,7 +166,11 @@ DROP TABLE IF EXISTS `deliveries`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `deliveries` (
   `id_delivery` int NOT NULL AUTO_INCREMENT,
+  `order_id` int DEFAULT NULL,
   `delivery_date` date NOT NULL,
+  `customer_name` varchar(255) DEFAULT NULL,
+  `delivery_address` varchar(255) DEFAULT NULL,
+  `total_amount` decimal(10,2) DEFAULT NULL,
   `route_id` int NOT NULL,
   `status_id` int NOT NULL,
   `status` tinyint(1) DEFAULT '1',
@@ -177,7 +182,7 @@ CREATE TABLE `deliveries` (
   KEY `idx_deliveries_status_created` (`status`,`created_at`),
   CONSTRAINT `deliveries_ibfk_1` FOREIGN KEY (`route_id`) REFERENCES `routes` (`id_route`),
   CONSTRAINT `deliveries_ibfk_2` FOREIGN KEY (`status_id`) REFERENCES `delivery_statuses` (`id_status`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,7 +191,7 @@ CREATE TABLE `deliveries` (
 
 LOCK TABLES `deliveries` WRITE;
 /*!40000 ALTER TABLE `deliveries` DISABLE KEYS */;
-INSERT INTO `deliveries` VALUES (1,'2025-10-23',1,1,1,'2025-10-22 01:43:03','2025-10-22 01:43:03'),(2,'2025-10-23',1,1,1,'2025-10-22 01:48:05','2025-10-22 01:48:05'),(3,'2025-10-24',2,3,1,'2025-10-22 01:48:05','2025-10-22 02:57:03'),(4,'2025-10-25',3,2,1,'2025-10-22 01:48:05','2025-10-22 01:48:05'),(5,'2025-10-24',2,1,1,'2025-10-22 04:20:30','2025-10-22 04:20:30');
+INSERT INTO `deliveries` VALUES (1,NULL,'2025-10-23',NULL,NULL,NULL,1,1,1,'2025-10-22 01:43:03','2025-10-22 01:43:03'),(2,NULL,'2025-10-23',NULL,NULL,NULL,1,3,1,'2025-10-22 01:48:05','2025-10-22 22:49:23'),(3,NULL,'2025-10-24',NULL,NULL,NULL,2,3,1,'2025-10-22 01:48:05','2025-10-22 02:57:03'),(4,NULL,'2025-10-25',NULL,NULL,NULL,3,2,1,'2025-10-22 01:48:05','2025-10-22 01:48:05'),(5,NULL,'2025-10-24',NULL,NULL,NULL,2,3,1,'2025-10-22 04:20:30','2025-10-22 23:19:30'),(7,NULL,'2025-10-22',NULL,NULL,NULL,4,1,1,'2025-10-22 21:18:26','2025-10-22 21:18:26'),(8,NULL,'2025-10-22',NULL,NULL,NULL,4,3,1,'2025-10-22 21:20:41','2025-10-22 22:35:27');
 /*!40000 ALTER TABLE `deliveries` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -223,7 +228,7 @@ CREATE TABLE `delivery_assignments` (
 
 LOCK TABLES `delivery_assignments` WRITE;
 /*!40000 ALTER TABLE `delivery_assignments` DISABLE KEYS */;
-INSERT INTO `delivery_assignments` VALUES (2,1,1,'2025-10-22',0,'agarrado',NULL,NULL,'2025-10-22 01:48:05','2025-10-22 03:54:21'),(3,2,2,'2025-10-22',0,'completado',NULL,NULL,'2025-10-22 01:48:05','2025-10-22 02:57:03'),(4,1,1,'2025-10-22',1,'en_ruta',NULL,NULL,'2025-10-22 01:48:05','2025-10-22 01:48:05');
+INSERT INTO `delivery_assignments` VALUES (1,1,1,'2025-10-22',1,'pendiente','2025-10-23 04:17:29','Asignación de prueba para testing','2025-10-22 16:17:29',NULL),(2,1,1,'2025-10-22',0,'completado',NULL,NULL,'2025-10-22 01:48:05','2025-10-22 22:49:23'),(2,1,2,'2025-10-22',1,'pendiente','2025-10-23 04:17:29','Segunda asignación de prueba','2025-10-22 16:17:29',NULL),(3,2,2,'2025-10-22',0,'completado',NULL,NULL,'2025-10-22 01:48:05','2025-10-22 02:57:03'),(4,1,1,'2025-10-22',1,'completado',NULL,NULL,'2025-10-22 01:48:05','2025-10-22 22:04:48'),(5,1,1,'2025-10-22',1,'completado','2025-10-23 04:21:16','Envio','2025-10-22 22:21:41','2025-10-22 23:19:30'),(8,3,1,'2025-10-22',1,'completado','2025-10-23 04:23:59','Envio','2025-10-22 22:24:12','2025-10-22 22:35:27');
 /*!40000 ALTER TABLE `delivery_assignments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -344,6 +349,7 @@ CREATE TABLE `delivery_products` (
 
 LOCK TABLES `delivery_products` WRITE;
 /*!40000 ALTER TABLE `delivery_products` DISABLE KEYS */;
+INSERT INTO `delivery_products` (`delivery_id`, `product_id`, `quantity`, `unit_price`, `created_at`, `updated_at`) VALUES (8,2,1,85.50,'2025-10-22 21:20:41','2025-10-22 21:20:41');
 /*!40000 ALTER TABLE `delivery_products` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -613,7 +619,7 @@ CREATE TABLE `incomes` (
   KEY `idx_incomes_status_created` (`status`,`created_at`),
   CONSTRAINT `incomes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id_user`),
   CONSTRAINT `incomes_ibfk_2` FOREIGN KEY (`delivery_id`) REFERENCES `deliveries` (`id_delivery`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -622,6 +628,7 @@ CREATE TABLE `incomes` (
 
 LOCK TABLES `incomes` WRITE;
 /*!40000 ALTER TABLE `incomes` DISABLE KEYS */;
+INSERT INTO `incomes` VALUES (1,85.50,'Ingreso por entrega #8 - Ruta: Sanarate → Mixco','2025-10-22 22:35:27',2,8,1,'2025-10-22 22:35:27','2025-10-22 22:35:27'),(2,100.00,'Ingreso por entrega #2 - Ruta: Guatemala → Mixco','2025-10-22 22:49:23',2,2,1,'2025-10-22 22:49:23','2025-10-22 22:49:23'),(3,100.00,'Ingreso por entrega #5 - Ruta: Guatemala → Villa Nueva','2025-10-22 23:19:30',2,5,1,'2025-10-22 23:19:30','2025-10-22 23:19:30');
 /*!40000 ALTER TABLE `incomes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -771,7 +778,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -780,7 +787,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'2025_10_21_224518_create_cache_table',1),(2,'2025_10_21_224525_create_sessions_table',1),(3,'2025_10_21_224532_create_jobs_table',1),(4,'2025_10_21_224552_create_failed_jobs_table',2),(5,'2025_10_21_224735_add_remember_token_to_users_table',3),(6,'2025_10_21_225128_add_name_column_to_users_table',4),(7,'2025_10_22_014351_add_driver_status_to_delivery_assignments_table',5),(8,'2025_10_22_031247_create_admin_sessions_table',6),(9,'2025_10_22_031257_create_driver_sessions_table',7),(11,'2025_10_22_040835_add_assigned_at_to_delivery_assignments_table',8);
+INSERT INTO `migrations` VALUES (1,'2025_10_21_224518_create_cache_table',1),(2,'2025_10_21_224525_create_sessions_table',1),(3,'2025_10_21_224532_create_jobs_table',1),(4,'2025_10_21_224552_create_failed_jobs_table',2),(5,'2025_10_21_224735_add_remember_token_to_users_table',3),(6,'2025_10_21_225128_add_name_column_to_users_table',4),(7,'2025_10_22_014351_add_driver_status_to_delivery_assignments_table',5),(8,'2025_10_22_031247_create_admin_sessions_table',6),(9,'2025_10_22_031257_create_driver_sessions_table',7),(11,'2025_10_22_040835_add_assigned_at_to_delivery_assignments_table',8),(13,'2025_10_22_182250_add_estimated_duration_to_routes_table',9),(15,'2025_10_22_224233_add_total_kilometers_to_vehicles_table',10),(17,'2025_10_22_233409_add_order_id_to_deliveries_table',11),(18,'2025_10_22_233439_create_order_products_table',12),(19,'2025_10_23_000155_add_product_id_to_order_products_table',13);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -801,7 +808,7 @@ CREATE TABLE `municipalities` (
   PRIMARY KEY (`id_municipality`),
   KEY `department_id` (`department_id`),
   CONSTRAINT `municipalities_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id_department`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -810,7 +817,7 @@ CREATE TABLE `municipalities` (
 
 LOCK TABLES `municipalities` WRITE;
 /*!40000 ALTER TABLE `municipalities` DISABLE KEYS */;
-INSERT INTO `municipalities` VALUES (1,'Guatemala',1,1,'2025-10-21 22:35:16','2025-10-21 22:35:16'),(2,'Mixco',1,1,'2025-10-21 22:35:16','2025-10-21 22:35:16'),(3,'Villa Nueva',1,1,'2025-10-21 22:35:16','2025-10-21 22:35:16'),(4,'Petapa',1,1,'2025-10-21 22:35:16','2025-10-21 22:35:16'),(5,'San José Pinula',1,1,'2025-10-21 22:35:16','2025-10-21 22:35:16');
+INSERT INTO `municipalities` VALUES (1,'Guatemala',1,1,'2025-10-21 22:35:16','2025-10-21 22:35:16'),(2,'Mixco',1,1,'2025-10-21 22:35:16','2025-10-21 22:35:16'),(3,'Villa Nueva',1,1,'2025-10-21 22:35:16','2025-10-21 22:35:16'),(4,'Petapa',1,1,'2025-10-21 22:35:16','2025-10-21 22:35:16'),(5,'San José Pinula',1,1,'2025-10-21 22:35:16','2025-10-21 22:35:16'),(6,'Sanarate',22,1,'2025-10-22 18:59:37','2025-10-22 18:59:37');
 /*!40000 ALTER TABLE `municipalities` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -853,6 +860,42 @@ CREATE TABLE `notifications` (
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `order_products`
+--
+
+DROP TABLE IF EXISTS `order_products`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `order_products` (
+  `id_order_product` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `order_id` int NOT NULL,
+  `product_id` int DEFAULT NULL,
+  `product_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `product_description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `quantity` decimal(10,2) NOT NULL,
+  `unit` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unidad',
+  `unit_price` decimal(10,2) NOT NULL,
+  `subtotal` decimal(10,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id_order_product`),
+  KEY `order_products_order_id_index` (`order_id`),
+  KEY `order_products_product_id_index` (`product_id`),
+  CONSTRAINT `order_products_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id_order`) ON DELETE CASCADE,
+  CONSTRAINT `order_products_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id_product`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `order_products`
+--
+
+LOCK TABLES `order_products` WRITE;
+/*!40000 ALTER TABLE `order_products` DISABLE KEYS */;
+/*!40000 ALTER TABLE `order_products` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1012,6 +1055,8 @@ CREATE TABLE `routes` (
   `origin_id` int NOT NULL,
   `destination_id` int NOT NULL,
   `distance_km` decimal(10,2) NOT NULL,
+  `estimated_duration` int DEFAULT NULL COMMENT 'Tiempo estimado en minutos',
+  `total_distance` decimal(8,2) DEFAULT NULL COMMENT 'Distancia total calculada en km',
   `status` tinyint(1) DEFAULT '1',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT NULL,
@@ -1020,7 +1065,7 @@ CREATE TABLE `routes` (
   KEY `destination_id` (`destination_id`),
   CONSTRAINT `routes_ibfk_1` FOREIGN KEY (`origin_id`) REFERENCES `municipalities` (`id_municipality`),
   CONSTRAINT `routes_ibfk_2` FOREIGN KEY (`destination_id`) REFERENCES `municipalities` (`id_municipality`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1029,7 +1074,7 @@ CREATE TABLE `routes` (
 
 LOCK TABLES `routes` WRITE;
 /*!40000 ALTER TABLE `routes` DISABLE KEYS */;
-INSERT INTO `routes` VALUES (1,1,2,15.50,1,'2025-10-21 23:15:05','2025-10-21 23:15:05'),(2,1,3,45.20,1,'2025-10-21 23:15:05','2025-10-21 23:15:05'),(3,2,3,35.80,1,'2025-10-21 23:15:05','2025-10-21 23:15:05');
+INSERT INTO `routes` VALUES (1,1,2,303.95,NULL,NULL,1,'2025-10-21 23:15:05','2025-10-22 19:01:38'),(2,1,3,45.20,NULL,NULL,1,'2025-10-21 23:15:05','2025-10-21 23:15:05'),(3,2,3,16.15,NULL,NULL,1,'2025-10-21 23:15:05','2025-10-22 19:02:00'),(4,6,2,68.85,NULL,NULL,1,'2025-10-22 19:00:22','2025-10-22 19:00:22');
 /*!40000 ALTER TABLE `routes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1079,7 +1124,7 @@ CREATE TABLE `tbl_kilometers` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_kilometer`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1088,6 +1133,7 @@ CREATE TABLE `tbl_kilometers` (
 
 LOCK TABLES `tbl_kilometers` WRITE;
 /*!40000 ALTER TABLE `tbl_kilometers` DISABLE KEYS */;
+INSERT INTO `tbl_kilometers` VALUES (1,1,45.20,'2025-10-22','Entrega #5 -  (Ruta preestablecida: 45.20 km)',1,'2025-10-23 05:19:30','2025-10-23 05:19:30');
 /*!40000 ALTER TABLE `tbl_kilometers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1152,7 +1198,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Super Administrador','Super','Administrador','superadmin','admin@sanalogistics.com','2025-10-22 04:48:34','$2y$12$vNwfpoSXkSNbsS1xKKAl1ewOGShm9stN96KGYsk49m6j2aYyivX8y','gGAcnWvR2nx3CCxnQ4hnvJ8JJrPfZ31t9fOuTwc4kyhLrzyoYLUthUl4Mjkw',1,'2025-10-21 22:35:16','2025-10-21 22:48:34'),(2,NULL,'Juan Carlos','Pérez López','juan.conductor','juan.conductor@sanalogistics.com',NULL,'$2y$12$gGEsULoEjfUcyztBZZao8u5PyEkp5UHU6Q9ol0sFYSV4Y/3YWUaby',NULL,1,'2025-10-22 01:36:58','2025-10-22 01:36:58'),(4,NULL,'María Elena','García Morales','maria.conductor','maria.conductor@sanalogistics.com',NULL,'$2y$12$6Iix1Rc.P2JweXf/6qfPhuzpqBARecWjxvqPIndiMLKPmbjEbryJe',NULL,1,'2025-10-22 01:37:56','2025-10-22 01:37:56'),(5,NULL,'Carlos Alberto','Rodríguez Hernández','carlos.conductor','carlos.conductor@sanalogistics.com',NULL,'$2y$12$kyHHXKgpuLqKxjwEJzcC.OvDnlJ9pmsrA3OXavH4d/iD3LHou.BYi',NULL,1,'2025-10-22 01:37:56','2025-10-22 01:37:56'),(6,NULL,'Super','Usuario','superusuario','super@sanalogistics.com','2025-10-22 08:49:34','$2y$12$3Yw58HXv0kvcBIdUkGF9N.beVCCyVIKF4VEb/3vVjEDd1NIkyG11S',NULL,1,'2025-10-22 02:49:34','2025-10-22 02:49:34');
+INSERT INTO `users` VALUES (1,'Super Administrador','Super','Administrador','superadmin','admin@sanalogistics.com','2025-10-22 04:48:34','$2y$12$vNwfpoSXkSNbsS1xKKAl1ewOGShm9stN96KGYsk49m6j2aYyivX8y','FfMwcBSfsDRnn0wmJ429OHNJDr4xhE4skmtx3P4m2Z50YO2q0UYqZlqwtBwr',1,'2025-10-21 22:35:16','2025-10-21 22:48:34'),(2,NULL,'Juan Carlos','Pérez López','juan.conductor','juan.conductor@sanalogistics.com',NULL,'$2y$12$gGEsULoEjfUcyztBZZao8u5PyEkp5UHU6Q9ol0sFYSV4Y/3YWUaby',NULL,1,'2025-10-22 01:36:58','2025-10-22 01:36:58'),(4,NULL,'María Elena','García Morales','maria.conductor','maria.conductor@sanalogistics.com',NULL,'$2y$12$6Iix1Rc.P2JweXf/6qfPhuzpqBARecWjxvqPIndiMLKPmbjEbryJe',NULL,1,'2025-10-22 01:37:56','2025-10-22 01:37:56'),(5,NULL,'Carlos Alberto','Rodríguez Hernández','carlos.conductor','carlos.conductor@sanalogistics.com',NULL,'$2y$12$kyHHXKgpuLqKxjwEJzcC.OvDnlJ9pmsrA3OXavH4d/iD3LHou.BYi',NULL,1,'2025-10-22 01:37:56','2025-10-22 01:37:56'),(6,NULL,'Super','Usuario','superusuario','super@sanalogistics.com','2025-10-22 08:49:34','$2y$12$3Yw58HXv0kvcBIdUkGF9N.beVCCyVIKF4VEb/3vVjEDd1NIkyG11S',NULL,1,'2025-10-22 02:49:34','2025-10-22 02:49:34');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1198,6 +1244,7 @@ CREATE TABLE `vehicles` (
   `capacity` int NOT NULL,
   `available` tinyint(1) DEFAULT '1',
   `status` tinyint(1) DEFAULT '1',
+  `total_kilometers` decimal(10,2) NOT NULL DEFAULT '0.00',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id_vehicle`),
@@ -1211,7 +1258,7 @@ CREATE TABLE `vehicles` (
 
 LOCK TABLES `vehicles` WRITE;
 /*!40000 ALTER TABLE `vehicles` DISABLE KEYS */;
-INSERT INTO `vehicles` VALUES (1,'P-001-ABC',3500,1,1,'2025-10-21 23:09:29','2025-10-21 23:09:29'),(2,'P-002-DEF',5000,1,1,'2025-10-21 23:09:29','2025-10-21 23:09:29'),(3,'P-003-GHI',2500,0,1,'2025-10-21 23:09:29','2025-10-21 23:09:29'),(4,'P-004-JKL',4000,1,1,'2025-10-21 23:09:29','2025-10-21 23:09:29');
+INSERT INTO `vehicles` VALUES (1,'P-001-ABC',3500,1,1,0.00,'2025-10-21 23:09:29','2025-10-22 23:19:30'),(2,'P-002-DEF',5000,1,1,0.00,'2025-10-21 23:09:29','2025-10-21 23:09:29'),(3,'P-003-GHI',2500,0,1,0.00,'2025-10-21 23:09:29','2025-10-21 23:09:29'),(4,'P-004-JKL',4000,1,1,0.00,'2025-10-21 23:09:29','2025-10-21 23:09:29');
 /*!40000 ALTER TABLE `vehicles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -1224,4 +1271,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-21 23:15:12
+-- Dump completed on 2025-10-23 20:18:53

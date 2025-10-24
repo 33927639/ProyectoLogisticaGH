@@ -12,6 +12,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 
 class DeliveryAssignmentResource extends Resource
@@ -26,9 +27,9 @@ class DeliveryAssignmentResource extends Resource
     
     protected static ?string $pluralModelLabel = 'Asignaciones';
     
-    protected static ?string $navigationGroup = 'Gestión de Entregas';
-    
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationGroup = 'Operaciones';
+
+    protected static ?int $navigationSort = 6;
 
     public static function form(Form $form): Form
     {
@@ -45,7 +46,9 @@ class DeliveryAssignmentResource extends Resource
                     
                 Forms\Components\Select::make('driver_id')
                     ->label('Conductor')
-                    ->options(Driver::all()->mapWithKeys(function ($driver) {
+                    ->options(Driver::all()->filter(function ($driver) {
+                        return !empty($driver->name);
+                    })->mapWithKeys(function ($driver) {
                         return [$driver->id_driver => $driver->name];
                     }))
                     ->required()
@@ -54,7 +57,9 @@ class DeliveryAssignmentResource extends Resource
                     
                 Forms\Components\Select::make('vehicle_id')
                     ->label('Vehículo')
-                    ->options(Vehicle::all()->mapWithKeys(function ($vehicle) {
+                    ->options(Vehicle::all()->filter(function ($vehicle) {
+                        return !empty($vehicle->license_plate);
+                    })->mapWithKeys(function ($vehicle) {
                         return [$vehicle->id_vehicle => $vehicle->license_plate];
                     }))
                     ->required()
@@ -72,8 +77,13 @@ class DeliveryAssignmentResource extends Resource
                     ->default('pendiente')
                     ->required(),
                     
-                Forms\Components\DateTimePicker::make('assigned_at')
+                Forms\Components\DatePicker::make('assignment_date')
                     ->label('Fecha de Asignación')
+                    ->default(now()->format('Y-m-d'))
+                    ->required(),
+                    
+                Forms\Components\DateTimePicker::make('assigned_at')
+                    ->label('Fecha y Hora de Asignación')
                     ->default(now())
                     ->required(),
                     
@@ -160,6 +170,36 @@ class DeliveryAssignmentResource extends Resource
             ->actions([
                 Tables\Actions\DeleteAction::make(),
                 
+                Tables\Actions\Action::make('complete_delivery')
+                    ->label('Completar Entrega')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Completar Entrega')
+                    ->modalDescription('¿Estás seguro de que quieres marcar esta entrega como completada? Esto generará automáticamente un ingreso.')
+                    ->visible(fn (DeliveryAssignment $record): bool => $record->driver_status !== 'completado')
+                    ->action(function (DeliveryAssignment $record) {
+                        // Actualizar estado del conductor
+                        $record->update(['driver_status' => 'completado']);
+                        
+                        // Actualizar estado de la entrega a "Entregado"
+                        $delivery = $record->delivery;
+                        if ($delivery) {
+                            $entregadoStatus = \App\Models\DeliveryStatus::where('name_status', 'like', '%entregado%')
+                                                                        ->orWhere('name_status', 'like', '%completado%')
+                                                                        ->first();
+                            if ($entregadoStatus) {
+                                $delivery->update(['status_id' => $entregadoStatus->id_status]);
+                            }
+                        }
+                    })
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Entrega completada correctamente')
+                            ->body('Se ha generado automáticamente el ingreso correspondiente.')
+                            ->success()
+                    ),
+                    
                 Tables\Actions\Action::make('change_status')
                     ->label('Cambiar Estado')
                     ->icon('heroicon-o-arrow-path')
@@ -176,8 +216,25 @@ class DeliveryAssignmentResource extends Resource
                     ])
                     ->action(function (DeliveryAssignment $record, array $data): void {
                         $record->update(['driver_status' => $data['new_status']]);
+                        
+                        // Si el estado es completado, también actualizar la entrega
+                        if ($data['new_status'] === 'completado') {
+                            $delivery = $record->delivery;
+                            if ($delivery) {
+                                $entregadoStatus = \App\Models\DeliveryStatus::where('name_status', 'like', '%entregado%')
+                                                                            ->orWhere('name_status', 'like', '%completado%')
+                                                                            ->first();
+                                if ($entregadoStatus) {
+                                    $delivery->update(['status_id' => $entregadoStatus->id_status]);
+                                }
+                            }
+                        }
                     })
-                    ->successNotificationTitle('Estado actualizado correctamente'),
+                    ->successNotification(
+                        Notification::make()
+                            ->title('Estado actualizado correctamente')
+                            ->success()
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -202,7 +259,11 @@ class DeliveryAssignmentResource extends Resource
                                 $record->update(['driver_status' => $data['status']]);
                             });
                         })
-                        ->successNotificationTitle('Estados actualizados correctamente'),
+                        ->successNotification(
+                            Notification::make()
+                                ->title('Estados actualizados correctamente')
+                                ->success()
+                        ),
                 ]),
             ])
             ->defaultSort('assigned_at', 'desc');

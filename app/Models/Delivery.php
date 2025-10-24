@@ -13,6 +13,10 @@ class Delivery extends Model
     protected $primaryKey = 'id_delivery';
     
     protected $fillable = [
+        'order_id',
+        'customer_name',
+        'delivery_address',
+        'total_amount',
         'delivery_date',
         'route_id',
         'status_id',
@@ -23,10 +27,16 @@ class Delivery extends Model
 
     protected $casts = [
         'delivery_date' => 'date',
+        'total_amount' => 'decimal:2',
         'status' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class, 'order_id', 'id_order');
+    }
 
     public function route(): BelongsTo
     {

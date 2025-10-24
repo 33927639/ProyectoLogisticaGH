@@ -13,4 +13,19 @@ class CreateDeliveryAssignment extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        // Asegurar que assignment_date tenga valor
+        if (empty($data['assignment_date'])) {
+            $data['assignment_date'] = now()->format('Y-m-d');
+        }
+        
+        // Asegurar que assigned_at tenga valor
+        if (empty($data['assigned_at'])) {
+            $data['assigned_at'] = now();
+        }
+
+        return $data;
+    }
 }

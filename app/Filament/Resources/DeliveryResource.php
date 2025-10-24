@@ -6,7 +6,6 @@ use App\Filament\Resources\DeliveryResource\Pages;
 use App\Filament\Resources\DeliveryResource\RelationManagers;
 use App\Models\Delivery;
 use App\Models\Route;
-use App\Models\Municipality;
 use App\Models\DeliveryStatus;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -24,7 +23,7 @@ class DeliveryResource extends Resource
     
     protected static ?string $navigationGroup = 'Operaciones';
     
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
@@ -34,78 +33,52 @@ class DeliveryResource extends Resource
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
+                                Forms\Components\Select::make('order_id')
+                                    ->label('Orden')
+                                    ->relationship('order', 'id_order')
+                                    ->getOptionLabelFromRecordUsing(fn ($record) => "#{$record->id_order} - {$record->customer->customer_name}")
+                                    ->searchable()
+                                    ->preload()
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        if ($state) {
+                                            $order = \App\Models\Order::find($state);
+                                            if ($order) {
+                                                $set('customer_name', $order->customer->customer_name);
+                                                $set('total_amount', $order->total_amount);
+                                            }
+                                        }
+                                    }),
+
+                                Forms\Components\TextInput::make('customer_name')
+                                    ->label('Nombre del Cliente')
+                                    ->maxLength(255),
+
+                                Forms\Components\Textarea::make('delivery_address')
+                                    ->label('Dirección de Entrega')
+                                    ->rows(3)
+                                    ->columnSpanFull(),
+
                                 Forms\Components\DatePicker::make('delivery_date')
                                     ->label('Fecha de Entrega')
                                     ->required()
                                     ->default(now()),
+
+                                Forms\Components\TextInput::make('total_amount')
+                                    ->label('Monto Total')
+                                    ->numeric()
+                                    ->prefix('Q')
+                                    ->step(0.01)
+                                    ->readOnly(),
+
                                 Forms\Components\Select::make('route_id')
                                     ->label('Ruta')
                                     ->relationship('route', 'id_route')
-                                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->origin->name_municipality} → {$record->destination->name_municipality} ({$record->distance_km} km)")
-                                    ->searchable(['origin.name_municipality', 'destination.name_municipality'])
+                                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->origin->name_municipality} → {$record->destination->name_municipality}")
+                                    ->searchable()
                                     ->preload()
-                                    ->required()
-                                    ->live()
-                                    ->afterStateUpdated(function ($state, $set) {
-                                        if ($state) {
-                                            $route = Route::find($state);
-                                            if ($route) {
-                                                $set('route_info', "Distancia: {$route->distance_km} km - {$route->origin->name_municipality} → {$route->destination->name_municipality}");
-                                            }
-                                        }
-                                    })
-                                    ->hint('Las rutas se crean automáticamente con distancias de Google Maps')
-                                    ->hintColor('info')
-                                    ->createOptionForm([
-                                        Forms\Components\Grid::make(2)
-                                            ->schema([
-                                                Forms\Components\Select::make('origin_id')
-                                                    ->label('Municipio Origen')
-                                                    ->relationship('origin', 'name_municipality')
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->required()
-                                                    ->live()
-                                                    ->afterStateUpdated(function ($state, $set, $get) {
-                                                        if ($state && $get('destination_id')) {
-                                                            \App\Filament\Resources\RouteResource::calculateDistanceAndCheckDuplicate($state, $get('destination_id'), $set);
-                                                        }
-                                                    }),
-                                                Forms\Components\Select::make('destination_id')
-                                                    ->label('Municipio Destino')
-                                                    ->relationship('destination', 'name_municipality')
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->required()
-                                                    ->live()
-                                                    ->afterStateUpdated(function ($state, $set, $get) {
-                                                        if ($state && $get('origin_id')) {
-                                                            \App\Filament\Resources\RouteResource::calculateDistanceAndCheckDuplicate($get('origin_id'), $state, $set);
-                                                        }
-                                                    }),
-                                                Forms\Components\TextInput::make('distance_km')
-                                                    ->label('Distancia (km)')
-                                                    ->numeric()
-                                                    ->step(0.01)
-                                                    ->suffix('km')
-                                                    ->required()
-                                                    ->readOnly(),
-                                                Forms\Components\Toggle::make('status')
-                                                    ->label('Activa')
-                                                    ->default(true),
-                                            ])
-                                    ])
-                                    ->createOptionUsing(function (array $data) {
-                                        // Verificar si ya existe la ruta
-                                        $existingRoute = Route::findExistingRoute($data['origin_id'], $data['destination_id']);
-                                        if ($existingRoute) {
-                                            return $existingRoute->id_route;
-                                        }
-                                        
-                                        // Crear nueva ruta
-                                        $route = Route::create($data);
-                                        return $route->id_route;
-                                    }),
+                                    ->required(),
+
                                 Forms\Components\Select::make('status_id')
                                     ->label('Estado de Entrega')
                                     ->options(\App\Models\DeliveryStatus::where('status', true)->pluck('name_status', 'id_status'))
@@ -116,22 +89,78 @@ class DeliveryResource extends Resource
                                     ->default(true),
                             ]),
                     ]),
-                Forms\Components\Section::make('Información de Ruta Seleccionada')
+                    
+                Forms\Components\Section::make('Productos de la Entrega')
                     ->schema([
-                        Forms\Components\Placeholder::make('route_info')
-                            ->label('Detalles de la Ruta')
-                            ->content(function ($get) {
-                                if ($get('route_id')) {
-                                    $route = Route::find($get('route_id'));
-                                    if ($route) {
-                                        return "📍 {$route->origin->name_municipality} → {$route->destination->name_municipality}\n📏 Distancia: {$route->distance_km} km\n🏢 Departamento Origen: {$route->origin->department->name_department}\n🏢 Departamento Destino: {$route->destination->department->name_department}";
-                                    }
-                                }
-                                return 'Seleccione una ruta para ver los detalles';
-                            }),
-                    ])
-                    ->visible(fn ($get) => $get('route_id'))
-                    ->collapsible(),
+                        Forms\Components\Repeater::make('deliveryProducts')
+                            ->label('Productos')
+                            ->schema([
+                                Forms\Components\Grid::make(4)
+                                    ->schema([
+                                        Forms\Components\Select::make('product_id')
+                                            ->label('Producto')
+                                            ->options(\App\Models\Product::where('status', true)->pluck('name', 'id_product'))
+                                            ->required()
+                                            ->searchable()
+                                            ->live()
+                                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                                if ($state) {
+                                                    $product = \App\Models\Product::find($state);
+                                                    if ($product) {
+                                                        $set('unit_price', $product->unit_price);
+                                                        // Recalcular subtotal si ya hay cantidad
+                                                        $quantity = $get('quantity') ?? 1;
+                                                        if ($quantity) {
+                                                            $set('subtotal', $quantity * $product->unit_price);
+                                                        }
+                                                    }
+                                                }
+                                            }),
+                                        Forms\Components\TextInput::make('quantity')
+                                            ->label('Cantidad')
+                                            ->numeric()
+                                            ->minValue(1)
+                                            ->default(1)
+                                            ->required()
+                                            ->live()
+                                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                                $quantity = $state;
+                                                $unitPrice = $get('unit_price');
+                                                if ($quantity && $unitPrice) {
+                                                    $set('subtotal', $quantity * $unitPrice);
+                                                }
+                                            }),
+                                        Forms\Components\TextInput::make('unit_price')
+                                            ->label('Precio Unitario')
+                                            ->numeric()
+                                            ->prefix('Q')
+                                            ->step(0.01)
+                                            ->required()
+                                            ->live()
+                                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                                $unitPrice = $state;
+                                                $quantity = $get('quantity');
+                                                if ($quantity && $unitPrice) {
+                                                    $set('subtotal', $quantity * $unitPrice);
+                                                }
+                                            }),
+                                        Forms\Components\TextInput::make('subtotal')
+                                            ->label('Subtotal')
+                                            ->numeric()
+                                            ->prefix('Q')
+                                            ->step(0.01)
+                                            ->disabled()
+                                            ->dehydrated(false) // No enviar este valor al servidor
+                                            ->helperText('Calculado automáticamente: Cantidad × Precio'),
+                                    ]),
+                            ])
+                            ->defaultItems(1)
+                            ->addActionLabel('Agregar Producto')
+                            ->collapsible()
+                            ->reorderableWithButtons()
+                            ->deletable()
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -142,50 +171,64 @@ class DeliveryResource extends Resource
                 Tables\Columns\TextColumn::make('id_delivery')
                     ->label('ID')
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('order.id_order')
+                    ->label('Orden #')
+                    ->sortable()
+                    ->searchable()
+                    ->formatStateUsing(fn ($state) => $state ? "#{$state}" : 'Sin orden'),
+
+                Tables\Columns\TextColumn::make('customer_name')
+                    ->label('Cliente')
+                    ->searchable()
+                    ->placeholder('Sin cliente'),
+
                 Tables\Columns\TextColumn::make('delivery_date')
                     ->label('Fecha')
-                    ->date()
+                    ->date('d/m/Y')
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('route.origin.name_municipality')
                     ->label('Origen')
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('route.destination.name_municipality')
                     ->label('Destino')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('route.distance_km')
-                    ->label('Distancia')
-                    ->suffix(' km')
-                    ->numeric(2)
+
+                Tables\Columns\TextColumn::make('total_amount')
+                    ->label('Total')
+                    ->money('GTQ')
                     ->sortable(),
+
                 Tables\Columns\TextColumn::make('delivery_status.name_status')
-                        ->label('Estado')
-                        ->badge()
-                        ->color(fn (string $state): string => match ($state) {
-                            'Pendiente' => 'warning',
-                            'En Ruta' => 'info',
-                            'Entregado' => 'success',
-                            'Cancelado' => 'danger',
-                            default => 'gray',
-                        }),
-                Tables\Columns\TextColumn::make('assignment_status')
-                    ->label('Asignación')
-                    ->getStateUsing(function ($record) {
-                        $assignment = $record->deliveryAssignments()->first();
-                        if (!$assignment) {
-                            return 'Sin asignar';
-                        }
-                        return ucfirst($assignment->status) . ' - ' . $assignment->driver->first_name;
-                    })
+                    ->label('Estado')
                     ->badge()
-                    ->color(fn (string $state): string => match (true) {
-                        str_contains($state, 'Sin asignar') => 'gray',
-                        str_contains($state, 'Pendiente') => 'warning',
-                        str_contains($state, 'Aceptado') => 'info',
-                        str_contains($state, 'En_ruta') => 'primary',
-                        str_contains($state, 'Completado') => 'success',
-                        str_contains($state, 'Rechazado') => 'danger',
+                    ->color(fn (string $state): string => match ($state) {
+                        'Pendiente' => 'warning',
+                        'En Ruta' => 'info',
+                        'Entregado' => 'success',
+                        'Cancelado' => 'danger',
                         default => 'gray',
                     }),
+                Tables\Columns\TextColumn::make('total_products')
+                    ->label('Total Productos')
+                    ->getStateUsing(function ($record) {
+                        return \DB::table('delivery_products')
+                            ->where('delivery_id', $record->id_delivery)
+                            ->sum('subtotal');
+                    })
+                    ->money('GTQ')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('products_count')
+                    ->label('# Productos')
+                    ->getStateUsing(function ($record) {
+                        return \DB::table('delivery_products')
+                            ->where('delivery_id', $record->id_delivery)
+                            ->count();
+                    })
+                    ->badge()
+                    ->color('info'),
                 Tables\Columns\IconColumn::make('status')
                     ->label('Activa')
                     ->boolean(),
@@ -221,54 +264,6 @@ class DeliveryResource extends Resource
                     ->label('Activa'),
             ])
             ->actions([
-                Tables\Actions\Action::make('assign_driver')
-                    ->label('Asignar Conductor')
-                    ->icon('heroicon-m-user-plus')
-                    ->color('info')
-                    ->form([
-                        Forms\Components\Select::make('driver_id')
-                            ->label('Conductor')
-                            ->relationship('', 'first_name')
-                            ->options(\App\Models\Driver::where('status', true)->get()->pluck('full_name', 'id_driver'))
-                            ->searchable()
-                            ->required(),
-                        Forms\Components\Select::make('vehicle_id')
-                            ->label('Vehículo')
-                            ->relationship('', 'plate')
-                            ->options(\App\Models\Vehicle::where('status', true)->get()->pluck('plate', 'id_vehicle'))
-                            ->searchable()
-                            ->required(),
-                        Forms\Components\DateTimePicker::make('assignment_date')
-                            ->label('Fecha de Asignación')
-                            ->default(now())
-                            ->required(),
-                    ])
-                    ->action(function ($record, array $data) {
-                        \App\Models\DeliveryAssignment::create([
-                            'delivery_id' => $record->id_delivery,
-                            'driver_id' => $data['driver_id'],
-                            'vehicle_id' => $data['vehicle_id'],
-                            'assignment_date' => $data['assignment_date'],
-                            'status' => 'pendiente',
-                        ]);
-                        
-                        \Filament\Notifications\Notification::make()
-                            ->title('Conductor Asignado')
-                            ->body('El conductor ha sido asignado exitosamente a esta entrega.')
-                            ->success()
-                            ->send();
-                    })
-                    ->visible(fn ($record) => !$record->deliveryAssignments()->exists())
-                    ->modalHeading('Asignar Conductor y Vehículo')
-                    ->modalDescription('Seleccione el conductor y vehículo para esta entrega.'),
-                    
-                Tables\Actions\Action::make('view_assignments')
-                    ->label('Ver Asignaciones')
-                    ->icon('heroicon-m-users')
-                    ->color('gray')
-                    ->url(fn ($record) => \App\Filament\Resources\DeliveryAssignmentResource::getUrl('index', ['delivery_id' => $record->id_delivery]))
-                    ->visible(fn ($record) => $record->deliveryAssignments()->exists()),
-                    
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
@@ -291,6 +286,7 @@ class DeliveryResource extends Resource
         return [
             'index' => Pages\ListDeliveries::route('/'),
             'create' => Pages\CreateDelivery::route('/create'),
+            'view' => Pages\ViewDelivery::route('/{record}'),
             'edit' => Pages\EditDelivery::route('/{record}/edit'),
         ];
     }

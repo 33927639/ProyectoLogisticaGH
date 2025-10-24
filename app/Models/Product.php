@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
@@ -36,5 +37,10 @@ class Product extends Model
         return $this->belongsToMany(Delivery::class, 'delivery_products', 'product_id', 'delivery_id')
                     ->withPivot('quantity', 'unit_price', 'subtotal')
                     ->withTimestamps();
+    }
+
+    public function orderProducts(): HasMany
+    {
+        return $this->hasMany(OrderProduct::class, 'product_id', 'id_product');
     }
 }

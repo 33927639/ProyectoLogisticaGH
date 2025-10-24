@@ -11,7 +11,7 @@ class DeliveryTrendChart extends ChartWidget
 {
     protected static ?string $heading = 'Entregas de los Últimos 7 Días';
     protected static ?int $sort = 4;
-    protected static ?string $pollingInterval = '30s';
+    protected static ?string $pollingInterval = '15s'; // Más frecuente para mayor tiempo real
 
     protected function getData(): array
     {

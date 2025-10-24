@@ -11,6 +11,7 @@ Route::get('/', function () {
 Route::get('/logout-all', function () {
     // Cerrar sesión del admin
     Auth::guard('web')->logout();
+    Auth::guard('admin')->logout();
     
     // Cerrar sesión del conductor
     Auth::guard('driver')->logout();
@@ -21,3 +22,15 @@ Route::get('/logout-all', function () {
     
     return redirect('/');
 })->name('logout.all');
+
+// Logout específico para admin
+Route::get('/admin/logout', function () {
+    Auth::guard('admin')->logout();
+    return redirect('/admin');
+})->name('admin.logout');
+
+// Logout específico para conductor
+Route::get('/conductor/logout', function () {
+    Auth::guard('driver')->logout();
+    return redirect('/conductor');
+})->name('conductor.logout');

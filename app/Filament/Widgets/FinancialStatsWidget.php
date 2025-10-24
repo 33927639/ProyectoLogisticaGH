@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Gate;
 
 class FinancialStatsWidget extends BaseWidget
 {
-    protected static ?string $pollingInterval = '5m';
+    protected static ?string $pollingInterval = '60s'; // ESTADÍSTICO: Datos financieros
     protected static bool $isLazy = false;
     protected static ?int $sort = 3;
 

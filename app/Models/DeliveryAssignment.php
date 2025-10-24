@@ -2,20 +2,15 @@
 
 namespace App\Models;
 
-use App\Traits\HasCompositeKey;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DeliveryAssignment extends Model
 {
-    use HasCompositeKey;
-    
     protected $table = 'delivery_assignments';
     
-    // Clave primaria compuesta
+    // Usar clave primaria compuesta pero generar una clave única para Filament
     protected $primaryKey = ['delivery_id', 'vehicle_id', 'driver_id'];
-    
-    // No hay clave primaria única, será manejado por Filament de manera especial
     public $incrementing = false;
     
     // Usar timestamps automáticos
@@ -31,6 +26,29 @@ class DeliveryAssignment extends Model
         'notes',
     ];
 
+    protected $attributes = [
+        'driver_status' => 'pendiente',
+        'assignment_date' => null, // Se asignará automáticamente
+        'assigned_at' => null, // Se asignará automáticamente
+    ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->assignment_date)) {
+                $model->assignment_date = now()->format('Y-m-d');
+            }
+            if (empty($model->assigned_at)) {
+                $model->assigned_at = now();
+            }
+        });
+    }
+
     protected $casts = [
         'assignment_date' => 'date',
         'assigned_at' => 'datetime',
@@ -40,6 +58,23 @@ class DeliveryAssignment extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * Get the value of the model's primary key.
+     * Para Filament, generar una clave única combinando los IDs
+     */
+    public function getKey()
+    {
+        return $this->delivery_id . '-' . $this->vehicle_id . '-' . $this->driver_id;
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKey()
+    {
+        return $this->getKey();
+    }
 
     /**
      * Relationship with delivery

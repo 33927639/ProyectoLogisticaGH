@@ -15,6 +15,8 @@ class LiveDeliveryStatusWidget extends BaseWidget
 {
     protected static ?string $heading = 'Estado de Entregas en Tiempo Real';
     
+    protected static ?string $pollingInterval = '5s'; // CRÍTICO: Actualizar cada 5s
+    
     protected static ?int $sort = 2;
     
     protected int | string | array $columnSpan = 'full';
@@ -25,7 +27,7 @@ class LiveDeliveryStatusWidget extends BaseWidget
             ->query(
                 DeliveryAssignment::query()
                     ->whereIn('driver_status', ['agarrado', 'en_ruta'])
-                    ->orderBy('assigned_at', 'desc')
+                    ->orderBy('created_at', 'desc')
                     ->limit(10)
             )
             ->columns([
@@ -57,22 +59,33 @@ class LiveDeliveryStatusWidget extends BaseWidget
                     ->label('Estado')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
+                        'pendiente' => 'gray',
                         'agarrado' => 'warning',
                         'en_ruta' => 'primary',
+                        'completado' => 'success',
                         default => 'gray',
                     })
                     ->icon(fn (string $state): string => match ($state) {
+                        'pendiente' => 'heroicon-o-clock',
                         'agarrado' => 'heroicon-o-hand-raised',
                         'en_ruta' => 'heroicon-o-truck',
+                        'completado' => 'heroicon-o-check-circle',
                         default => 'heroicon-o-question-mark-circle',
                     }),
                     
-                Tables\Columns\TextColumn::make('assigned_at')
+                Tables\Columns\TextColumn::make('created_at')
                     ->label('Asignado')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => $state ? $state->format('d/m/Y H:i') : 'Sin fecha'),
+                    
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Última Actualización')
+                    ->dateTime()
+                    ->sortable()
+                    ->formatStateUsing(fn ($state) => $state ? $state->format('d/m/Y H:i') : 'Sin fecha'),
             ])
-            ->poll('10s') // Actualizar cada 10 segundos
+            ->poll('5s') // Actualizar cada 5 segundos para mayor tiempo real
             ->emptyStateHeading('No hay entregas activas')
             ->emptyStateDescription('No hay entregas con estado "agarrado" o "en ruta" en este momento.')
             ->emptyStateIcon('heroicon-o-truck');

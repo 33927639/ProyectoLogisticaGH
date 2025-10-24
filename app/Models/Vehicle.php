@@ -16,6 +16,7 @@ class Vehicle extends Model
         'capacity',
         'available',
         'status',
+        'total_kilometers',
         'created_at',
         'updated_at'
     ];
@@ -24,6 +25,7 @@ class Vehicle extends Model
         'capacity' => 'integer',
         'available' => 'boolean',
         'status' => 'boolean',
+        'total_kilometers' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -55,7 +57,7 @@ class Vehicle extends Model
 
     public function kilometers(): HasMany
     {
-        return $this->hasMany(Kilometer::class, 'vehicle_id');
+        return $this->hasMany(TblKilometer::class, 'id_vehicle', 'id_vehicle');
     }
 
     public function notifications(): HasMany
@@ -76,5 +78,42 @@ class Vehicle extends Model
         return $this->belongsToMany(Delivery::class, 'delivery_assignments', 'vehicle_id', 'delivery_id')
                     ->withPivot('driver_id', 'assignment_date', 'status')
                     ->withTimestamps();
+    }
+
+    /**
+     * Add kilometers to the vehicle
+     */
+    public function addKilometers(float $kilometers, string $notes = '', $userId = null): TblKilometer
+    {
+        // Create kilometer log
+        $kilometerLog = TblKilometer::create([
+            'id_vehicle' => $this->id_vehicle,
+            'kilometers' => $kilometers,
+            'date' => now()->toDateString(),
+            'notes' => $notes,
+            'id_user' => $userId ?? (auth()->user()->id_user ?? null)
+        ]);
+
+        // Update vehicle total kilometers
+        $this->increment('total_kilometers', $kilometers);
+
+        return $kilometerLog;
+    }
+
+    /**
+     * Check if vehicle needs maintenance (every 10,000 km)
+     */
+    public function needsMaintenance(): bool
+    {
+        return $this->total_kilometers >= 10000;
+    }
+
+    /**
+     * Get kilometers until next maintenance
+     */
+    public function kilometersUntilMaintenance(): float
+    {
+        $nextMaintenance = ceil($this->total_kilometers / 10000) * 10000;
+        return max(0, $nextMaintenance - $this->total_kilometers);
     }
 }

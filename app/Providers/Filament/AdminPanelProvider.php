@@ -47,11 +47,20 @@ class AdminPanelProvider extends PanelProvider
                 // Notification System
                 \App\Filament\Widgets\NotificationBellWidget::class,
                 
+                // Real-time Widgets
+                \App\Filament\Widgets\RealTimeStatusWidget::class,
+                
                 // Custom Dashboard Widgets
                 \App\Filament\Widgets\DeliveryStatsWidget::class,
+                \App\Filament\Widgets\MaintenanceAlertsWidget::class,
                 \App\Filament\Widgets\LiveDeliveryStatusWidget::class,
+                \App\Filament\Widgets\ActiveDriversWidget::class,
+                \App\Filament\Widgets\TodayDeliveriesWidget::class,
+                \App\Filament\Widgets\VehicleMaintenanceWidget::class,
+                \App\Filament\Widgets\RecentKilometersWidget::class,
                 \App\Filament\Widgets\FleetStatsWidget::class,
                 \App\Filament\Widgets\FinancialStatsWidget::class,
+                \App\Filament\Widgets\GoogleMapsStatsWidget::class,
                 \App\Filament\Widgets\DeliveryTrendChart::class,
                 \App\Filament\Widgets\FinancialTrendChart::class,
                 \App\Filament\Widgets\MaintenancePendingWidget::class,
@@ -73,6 +82,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->authGuard('admin');
     }
 }

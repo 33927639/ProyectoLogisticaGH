@@ -11,7 +11,7 @@ class NotificationBellWidget extends Widget
 {
     protected static string $view = 'filament.widgets.notification-bell-widget';
     protected static ?int $sort = -10; // Show at top
-    protected static ?string $pollingInterval = '30s';
+    protected static ?string $pollingInterval = '5s'; // CRÍTICO: Notificaciones importantes
 
     protected function getViewData(): array
     {

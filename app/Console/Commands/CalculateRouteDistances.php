@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Route;
+use App\Models\Delivery;
 use App\Services\GoogleMapsService;
+use Illuminate\Console\Command;
 
 class CalculateRouteDistances extends Command
 {
@@ -13,96 +14,133 @@ class CalculateRouteDistances extends Command
      *
      * @var string
      */
-    protected $signature = 'routes:calculate-distances {--force : Recalcular todas las distancias, incluso las que ya tienen valor}';
+    protected $signature = 'maps:calculate-distances {--route-id= : ID específico de ruta} {--all : Calcular todas las rutas}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Calcula automáticamente las distancias de las rutas usando Google Maps API';
+    protected $description = 'Calcula distancias y tiempos de rutas usando Google Maps API';
+
+    protected $googleMapsService;
+
+    public function __construct(GoogleMapsService $googleMapsService)
+    {
+        parent::__construct();
+        $this->googleMapsService = $googleMapsService;
+    }
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $this->info('🗺️  Iniciando cálculo de distancias de rutas...');
-        
-        $googleMaps = app(GoogleMapsService::class);
-        
-        // Obtener rutas según si se fuerza el recálculo o no
-        $routes = $this->option('force') 
-            ? Route::with(['origin', 'destination'])->get()
-            : Route::with(['origin', 'destination'])->where('distance_km', 0)->get();
-        
-        $total = $routes->count();
-        $processed = 0;
-        $errors = 0;
+        $this->info('🗺️  Iniciando cálculo de distancias con Google Maps...');
 
-        if ($total === 0) {
-            $this->info('✅ No hay rutas para procesar.');
-            return 0;
+        if (!config('services.google_maps.api_key')) {
+            $this->error('❌ Google Maps API key no configurada. Agrega GOOGLE_MAPS_API_KEY en tu archivo .env');
+            return 1;
         }
 
-        $this->info("📊 Procesando {$total} rutas...");
-        
-        $progressBar = $this->output->createProgressBar($total);
-        $progressBar->start();
+        $routeId = $this->option('route-id');
+        $all = $this->option('all');
 
-        foreach ($routes as $route) {
-            try {
-                $distanceData = $googleMaps->calculateDistance(
-                    $route->origin->name_municipality,
-                    $route->destination->name_municipality
-                );
-
-                if ($distanceData) {
-                    $oldDistance = $route->distance_km;
-                    $route->update(['distance_km' => $distanceData['distance_km']]);
-                    
-                    $this->newLine();
-                    $this->line("✅ {$route->route_name}: {$oldDistance} km → {$distanceData['distance_km']} km");
-                    $processed++;
-                } else {
-                    $this->newLine();
-                    $this->error("❌ Error calculando: {$route->route_name}");
-                    $errors++;
-                }
-
-                // Pequeña pausa para no saturar la API
-                usleep(100000); // 0.1 segundos
-
-            } catch (\Exception $e) {
-                $this->newLine();
-                $this->error("❌ Error en {$route->route_name}: " . $e->getMessage());
-                $errors++;
-            }
-
-            $progressBar->advance();
-        }
-
-        $progressBar->finish();
-        $this->newLine(2);
-        
-        // Resumen
-        $this->info("📈 Resumen de procesamiento:");
-        $this->table(
-            ['Métricas', 'Cantidad'],
-            [
-                ['Total de rutas', $total],
-                ['Procesadas exitosamente', $processed],
-                ['Errores', $errors],
-                ['Tasa de éxito', round(($processed / $total) * 100, 2) . '%']
-            ]
-        );
-
-        if ($errors > 0) {
-            $this->warn("⚠️  Algunos cálculos fallaron. Verifique su API key de Google Maps y conexión a internet.");
+        if ($routeId) {
+            $this->calculateSingleRoute($routeId);
+        } elseif ($all) {
+            $this->calculateAllRoutes();
         } else {
-            $this->info("🎉 ¡Todas las distancias fueron calculadas exitosamente!");
+            $this->info('Selecciona una opción:');
+            $this->info('--route-id=ID  : Calcular ruta específica');
+            $this->info('--all          : Calcular todas las rutas');
         }
 
         return 0;
+    }
+
+    protected function calculateSingleRoute($routeId)
+    {
+        $route = Route::find($routeId);
+        
+        if (!$route) {
+            $this->error("❌ Ruta con ID {$routeId} no encontrada");
+            return;
+        }
+
+        $this->info("📍 Calculando ruta: {$route->route_name}");
+        $this->processRoute($route);
+    }
+
+    protected function calculateAllRoutes()
+    {
+        $routes = Route::all();
+        
+        if ($routes->isEmpty()) {
+            $this->warn('⚠️  No hay rutas para procesar');
+            return;
+        }
+
+        $this->info("📊 Procesando {$routes->count()} rutas...");
+        
+        $progressBar = $this->output->createProgressBar($routes->count());
+        $progressBar->start();
+
+        foreach ($routes as $route) {
+            $this->processRoute($route);
+            $progressBar->advance();
+            
+            // Pequeña pausa para no sobrecargar la API
+            usleep(200000); // 0.2 segundos
+        }
+
+        $progressBar->finish();
+        $this->newLine();
+        $this->info('✅ Cálculo de todas las rutas completado');
+    }
+
+    protected function processRoute($route)
+    {
+        // Obtener entregas de esta ruta
+        $deliveries = Delivery::where('route_id', $route->id_route)->get();
+        
+        if ($deliveries->isEmpty()) {
+            $this->warn("⚠️  Ruta {$route->route_name} no tiene entregas");
+            return;
+        }
+
+        $origin = "Guatemala City, Guatemala"; // Punto de origen por defecto
+        $destinations = [];
+        
+        // Recopilar destinos de las entregas
+        foreach ($deliveries as $delivery) {
+            if (isset($delivery->address)) {
+                $destinations[] = $delivery->address;
+            }
+        }
+
+        if (empty($destinations)) {
+            $this->warn("⚠️  Ruta {$route->route_name} no tiene direcciones válidas");
+            return;
+        }
+
+        // Calcular distancias múltiples
+        $result = $this->googleMapsService->calculateMultipleStops($origin, $destinations);
+
+        if (!empty($result['stops'])) {
+            // Actualizar información de la ruta
+            $route->update([
+                'total_distance' => $result['total_distance'],
+                'estimated_duration' => $result['total_duration'],
+                'updated_at' => now()
+            ]);
+
+            $this->info("✅ Ruta {$route->route_name}:");
+            $this->info("   📏 Distancia total: {$result['total_distance_text']}");
+            $this->info("   ⏱️  Tiempo estimado: {$result['total_duration_text']}");
+            $this->info("   📦 Entregas: " . count($destinations));
+        } else {
+            $this->error("❌ Error calculando ruta {$route->route_name}");
+        }
     }
 }

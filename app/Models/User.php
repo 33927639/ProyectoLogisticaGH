@@ -61,22 +61,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        // Verificar que el usuario esté activo
-        if (!$this->status) {
-            return false;
-        }
-        
-        // Panel principal para administradores y supervisores
-        if ($panel->getId() === 'admin') {
-            return $this->hasRole(['Super Administrador', 'Administrador', 'Supervisor', 'Operador']);
-        }
-        
-        // Panel de conductores
-        if ($panel->getId() === 'driver') {
-            return $this->hasRole(['Conductor']);
-        }
-        
-        return false;
+        return $this->status && $this->roles()->exists();
     }
 
     /**
@@ -124,7 +109,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function tokens()
     {
-        return $this->hasMany(UserToken::class, 'user_id');
+        return $this->hasMany(UserToken::class, 'user_id', 'id_user');
     }
 
     /**
@@ -132,7 +117,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function expenses()
     {
-        return $this->hasMany(Expense::class, 'user_id');
+        return $this->hasMany(Expense::class, 'user_id', 'id_user');
     }
 
     /**
@@ -140,7 +125,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function incomes()
     {
-        return $this->hasMany(Income::class, 'user_id');
+        return $this->hasMany(Income::class, 'user_id', 'id_user');
     }
 
     /**
@@ -148,7 +133,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function fuelLogs()
     {
-        return $this->hasMany(FuelLog::class, 'user_id');
+        return $this->hasMany(FuelLog::class, 'user_id', 'id_user');
     }
 
     /**
@@ -156,7 +141,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function deliveryLogs()
     {
-        return $this->hasMany(DeliveryLog::class, 'user_id');
+        return $this->hasMany(DeliveryLog::class, 'user_id', 'id_user');
     }
 
     /**
@@ -164,52 +149,31 @@ class User extends Authenticatable implements FilamentUser
      */
     public function notifications()
     {
-        return $this->hasMany(Notification::class, 'user_id');
+        return $this->hasMany(Notification::class, 'user_id', 'id_user');
     }
 
     /**
-     * Relationship with approved maintenance requests
+     * Check if user has any of the specified roles
      */
-    public function approvedMaintenanceRequests()
+    public function hasRole($roles): bool
     {
-        return $this->hasMany(MaintenanceRequest::class, 'approved_by');
+        if (is_string($roles)) {
+            $roles = [$roles];
+        }
+        
+        return $this->roles()->whereIn('name_role', $roles)->exists();
     }
 
     /**
      * Check if user has a specific role
      */
-    public function hasRole($role): bool
+    public function hasRoleName(string $roleName): bool
     {
-        if (is_string($role)) {
-            return $this->roles()->where('name_role', $role)->exists();
-        }
-
-        if (is_array($role)) {
-            return $this->roles()->whereIn('name_role', $role)->exists();
-        }
-
-        return false;
+        return $this->roles()->where('name_role', $roleName)->exists();
     }
 
     /**
-     * Check if user has any of the given roles
-     */
-    public function hasAnyRole(array $roles): bool
-    {
-        return $this->roles()->whereIn('name_role', $roles)->exists();
-    }
-
-    /**
-     * Check if user has all the given roles
-     */
-    public function hasAllRoles(array $roles): bool
-    {
-        $userRoles = $this->roles()->pluck('name_role')->toArray();
-        return empty(array_diff($roles, $userRoles));
-    }
-
-    /**
-     * Get user's role names
+     * Get user role names
      */
     public function getRoleNames(): array
     {
@@ -217,35 +181,10 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Get user's primary role
+     * Relationship with approved maintenance requests
      */
-    public function getPrimaryRole(): ?string
+    public function approvedMaintenanceRequests()
     {
-        $role = $this->roles()->first();
-        return $role ? $role->name_role : null;
-    }
-
-    /**
-     * Check if user is admin
-     */
-    public function isAdmin(): bool
-    {
-        return $this->hasRole(['Administrador', 'Super Administrador']);
-    }
-
-    /**
-     * Check if user is supervisor
-     */
-    public function isSupervisor(): bool
-    {
-        return $this->hasRole(['Administrador', 'Super Administrador', 'Supervisor']);
-    }
-
-    /**
-     * Check if user can manage operations
-     */
-    public function canManageOperations(): bool
-    {
-        return $this->hasRole(['Administrador', 'Super Administrador', 'Supervisor', 'Operador']);
+        return $this->hasMany(MaintenanceRequest::class, 'approved_by', 'id_user');
     }
 }

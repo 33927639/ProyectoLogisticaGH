@@ -21,7 +21,8 @@ class MaintenanceResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
     
-    protected static ?string $navigationGroup = 'Mantenimiento';
+    protected static ?string $navigationGroup = 'Operaciones';
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {

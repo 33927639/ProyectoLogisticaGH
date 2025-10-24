@@ -9,14 +9,21 @@ use Filament\Resources\Pages\ListRecords;
 class ListMyDeliveries extends ListRecords
 {
     protected static string $resource = MyDeliveryResource::class;
+    
+    // Actualizar automáticamente cada 10 segundos
+    protected static ?string $pollingInterval = '10s';
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            // Los conductores no pueden crear entregas
+        ];
     }
     
-    public function getTitle(): string
+    protected function getHeaderWidgets(): array
     {
-        return 'Mis Entregas Asignadas';
+        return [
+            \App\Filament\Driver\Widgets\MyConductorStatsWidget::class,
+        ];
     }
 }

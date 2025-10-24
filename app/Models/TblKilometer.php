@@ -15,27 +15,21 @@ class TblKilometer extends Model
         'kilometers',
         'date',
         'notes',
-        'id_user',
+        'id_user'
     ];
 
     protected $casts = [
-        'date' => 'date',
         'kilometers' => 'decimal:2',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'date' => 'date',
+        'id_vehicle' => 'integer',
+        'id_user' => 'integer'
     ];
 
-    /**
-     * Relationship with vehicle
-     */
     public function vehicle(): BelongsTo
     {
         return $this->belongsTo(Vehicle::class, 'id_vehicle', 'id_vehicle');
     }
 
-    /**
-     * Relationship with user
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'id_user', 'id_user');
